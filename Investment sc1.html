@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrimeInvest - Investment Platform</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', -apple-system, Helvetica, Arial, sans-serif;
+            background: #0a0e1a;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0a0e1a 0%, #1a1f35 50%, #0d1b2a 100%);
+            padding: 20px;
+        }
+        .auth-box {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            padding: 40px 32px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        .auth-box .logo { text-align: center; margin-bottom: 30px; }
+        .auth-box .logo h1 { font-size: 28px; color: #22c55e; font-weight: 700; }
+        .auth-box .logo span { color: #e0e0e0; }
+        .auth-box .logo p { font-size: 13px; color: #64748b; margin-top: 4px; }
+        .auth-box h2 { font-size: 20px; margin-bottom: 22px; color: #f1f5f9; }
+        .auth-box input {
+            width: 100%;
+            padding: 13px 16px;
+            margin-bottom: 13px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .auth-box input:focus { border-color: #22c55e; }
+        .auth-box button {
+            width: 100%;
+            padding: 13px;
+            background: #22c55e;
+            color: #0a0e1a;
+            font-weight: 700;
+            font-size: 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 4px;
+        }
+        .auth-box button:hover { background: #16a34a; }
+        .auth-box .link { text-align: center; margin-top: 18px; font-size: 13px; color: #64748b; }
+        .auth-box .link a { color: #22c55e; cursor: pointer; text-decoration: none; }
+        .auth-box .link a:hover { text-decoration: underline; }
+        .auth-box .error { color: #ef4444; font-size: 13px; margin-bottom: 12px; text-align: center; }
+        .auth-box .success { color: #22c55e; font-size: 13px; margin-bottom: 12px; text-align: center; }
+        .auth-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #1e293b;
+        }
+        .auth-tabs div {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #64748b;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+        .auth-tabs div.active { color: #22c55e; border-bottom-color: #22c55e; }
+
+        .dashboard { display: none; }
+        .dashboard.active { display: block; }
+
+        .topbar {
+            background: #111827;
+            border-bottom: 1px solid #1e293b;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .topbar .brand { font-size: 20px; font-weight: 700; color: #22c55e; }
+        .topbar .brand span { color: #e0e0e0; }
+        .topbar .user-menu { display: flex; align-items: center; gap: 16px; }
+        .topbar .user-menu .username { font-size: 14px; color: #94a3b8; }
+        .topbar .user-menu button {
+            padding: 8px 18px;
+            background: #1e293b;
+            color: #e0e0e0;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        .topbar .user-menu button:hover { background: #334155; }
+        .topbar .user-menu .logout-btn { background: transparent; border-color: #ef4444; color: #ef4444; }
+        .topbar .user-menu .logout-btn:hover { background: #ef4444; color: #fff; }
+
+        .dashboard-content { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .stat-card .label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .stat-card .value { font-size: 26px; font-weight: 700; color: #f1f5f9; }
+        .stat-card .green { color: #22c55e; }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .quick-action {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            padding: 16px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quick-action:hover { border-color: #22c55e; transform: translateY(-2px); }
+        .quick-action .icon { font-size: 28px; margin-bottom: 6px; }
+        .quick-action h3 { font-size: 14px; color: #e0e0e0; margin-bottom: 2px; }
+        .quick-action p { font-size: 12px; color: #64748b; }
+
+        .section-title { font-size: 18px; font-weight: 600; color: #f1f5f9; margin-bottom: 14px; }
+        .table-wrap {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        table th {
+            background: #1a1f35;
+            text-align: left;
+            padding: 12px 16px;
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #1e293b;
+        }
+        table td { padding: 12px 16px; border-bottom: 1px solid #1a1f35; }
+        table tr:last-child td { border-bottom: none; }
+        table tr:hover td { background: #0f172a; }
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge.deposit { background: #065f4633; color: #22c55e; }
+        .badge.profit { background: #1e3a5f33; color: #60a5fa; }
+        .badge.withdraw { background: #5f1e1e33; color: #ef4444; }
+        .badge.active { background: #065f4633; color: #22c55e; }
+        .badge.frozen { background: #5f4a1e33; color: #facc15; }
+        .badge.closed { background: #5f1e1e33; color: #ef4444; }
+        .amount-green { color: #22c55e; font-weight: 600; }
+        .amount-red { color: #ef4444; font-weight: 600; }
+
+        .admin-section {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .admin-section h3 { font-size: 16px; color: #f1f5f9; margin-bottom: 16px; }
+        .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 16px; }
+        .admin-card {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            padding: 16px;
+        }
+        .admin-card .user-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .admin-card .user-header h4 { font-size: 15px; color: #f1f5f9; }
+        .admin-card .user-detail { font-size: 13px; color: #94a3b8; margin-bottom: 3px; }
+        .admin-card .user-detail strong { color: #e0e0e0; }
+        .admin-card .admin-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+        .admin-card .admin-actions input {
+            padding: 6px 10px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 12px;
+            width: 100px;
+        }
+        .admin-card .admin-actions button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .btn-green { background: #22c55e; color: #0a0e1a; }
+        .btn-green:hover { background: #16a34a; }
+        .btn-blue { background: #3b82f6; color: #fff; }
+        .btn-blue:hover { background: #2563eb; }
+        .btn-red { background: #ef4444; color: #fff; }
+        .btn-red:hover { background: #dc2626; }
+        .btn-yellow { background: #facc15; color: #0a0e1a; }
+        .btn-yellow:hover { background: #eab308; }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 14px;
+            padding: 28px;
+            width: 100%;
+            max-width: 480px;
+        }
+        .modal h3 { font-size: 18px; color: #f1f5f9; margin-bottom: 16px; }
+        .modal input, .modal select {
+            width: 100%;
+            padding: 11px 14px;
+            margin-bottom: 12px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+        .modal input:focus, .modal select:focus { border-color: #22c55e; }
+        .modal select option { background: #1e293b; }
+        .modal .modal-actions { display: flex; gap: 10px; margin-top: 6px; }
+        .modal .modal-actions button {
+            flex: 1;
+            padding: 11px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .modal .modal-actions .cancel { background: #1e293b; color: #94a3b8; }
+        .modal .modal-actions .cancel:hover { background: #334155; }
+
+        .hidden { display: none !important; }
+
+        @media (max-width: 640px) {
+            .auth-box { padding: 24px 18px; }
+            .topbar { padding: 12px 16px; flex-wrap: wrap; gap: 8px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .admin-grid { grid-template-columns: 1fr; }
+            .dashboard-content { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- AUTH CONTAINER -->
+<div id="authContainer" class="auth-container">
+    <div class="auth-box">
+        <div class="logo">
+            <h1>Prime<span>Invest</span></h1>
+            <p>Secure Investment Platform</p>
+        </div>
+
+        <div class="auth-tabs">
+            <div class="active" onclick="showAuthTab('login')">Login</div>
+            <div onclick="showAuthTab('register')">Register</div>
+        </div>
+
+        <div id="loginForm">
+            <h2>Welcome Back</h2>
+            <div id="loginError" class="error"></div>
+            <input type="text" id="loginUsername" placeholder="Username">
+            <input type="password" id="loginPassword" placeholder="Password">
+            <button onclick="userLogin()">Sign In</button>
+            <div class="link">
+                <a href="#" onclick="event.preventDefault();showAuthTab('register');">Don't have an account? Register</a>
+            </div>
+        </div>
+
+        <div id="registerForm" class="hidden">
+            <h2>Create Account</h2>
+            <div id="registerError" class="error"></div>
+            <div id="registerSuccess" class="success"></div>
+            <input type="text" id="regUsername" placeholder="Choose a username">
+            <input type="text" id="regFullname" placeholder="Full name">
+            <input type="email" id="regEmail" placeholder="Email address">
+            <input type="text" id="regPhone" placeholder="Phone number (optional)">
+            <input type="password" id="regPassword" placeholder="Password">
+            <button onclick="userRegister()">Create Account</button>
+            <div class="link">
+                <a href="#" onclick="event.preventDefault();showAuthTab('login');">Already have an account? Login</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- USER DASHBOARD -->
+<div id="userDashboard" class="dashboard">
+    <div class="topbar">
+        <div class="brand">Prime<span>Invest</span></div>
+        <div class="user-menu">
+            <span class="username" id="displayUsername">user</span>
+            <button onclick="switchToAdmin()" id="adminBtn" class="hidden">⚙ Admin</button>
+            <button onclick="userLogout()" class="logout-btn">Logout</button>
+        </div>
+    </div>
+
+    <div class="dashboard-content">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="label">Balance</div>
+                <div class="value green" id="userBalance">$0.00</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Total Invested</div>
+                <div class="value" id="userInvested">$0.00</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Total Profit</div>
+                <div class="value green" id="userProfit">$0.00</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Plan</div>
+                <div class="value" id="userPlan" style="font-size:20px;">-</div>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <div class="quick-action" onclick="showDepositModal()">
+                <div class="icon">💰</div>
+                <h3>Deposit</h3>
+                <p>Add funds to your account</p>
+            </div>
+            <div class="quick-action" onclick="showWithdrawModal()">
+                <div class="icon">💸</div>
+                <h3>Withdraw</h3>
+                <p>Request a withdrawal</p>
+            </div>
+            <div class="quick-action" onclick="showProfileModal()">
+                <div class="icon">👤</div>
+                <h3>Profile</h3>
+                <p>View account details</p>
+            </div>
+            <div class="quick-action" onclick="refreshUserData()">
+                <div class="icon">🔄</div>
+                <h3>Refresh</h3>
+                <p>Update account data</p>
+            </div>
+        </div>
+
+        <div class="section-title">Transaction History</div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Date</th><th>Type</th><th>Amount</th><th>Description</th></tr>
+                </thead>
+                <tbody id="userTransactions"></tbody>
+            </table>
+        </div>
+
+        <!-- ADMIN SECTION -->
+        <div id="adminSection" class="hidden">
+            <div class="section-title" style="color:#22c55e;">⚙ Admin Dashboard — Full Control</div>
+
+            <div class="admin-section">
+                <h3>All Users</h3>
+                <div id="adminUserCards" class="admin-grid"></div>
+            </div>
+
+            <div class="admin-section">
+                <h3>Create New User</h3>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                    <input type="text" id="adminNewUser" placeholder="Username" style="padding:10px;background:#1e293b;border:1px solid #334155;border-radius:6px;color:#fff;flex:1;min-width:120px;">
+                    <input type="text" id="adminNewPass" placeholder="Password" style="padding:10px;background:#1e293b;border:1px solid #334155;border-radius:6px;color:#fff;flex:1;min-width:120px;">
+                    <input type="text" id="adminNewName" placeholder="Full name" style="padding:10px;background:#1e293b;border:1px solid #334155;border-radius:6px;color:#fff;flex:1;min-width:120px;">
+                    <button onclick="adminCreateUser()" class="btn-green" style="padding:10px 20px;">➕ Create</button>
+                </div>
+                <div id="adminCreateMsg" style="margin-top:8px;font-size:13px;color:#22c55e;"></div>
+            </div>
+
+            <div class="admin-section">
+                <h3>System Actions</h3>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                    <button onclick="adminPayAllProfits()" class="btn-blue" style="padding:10px 20px;">💰 Pay All Profits (5%)</button>
+                    <button onclick="adminResetAll()" class="btn-red" style="padding:10px 20px;">⚠️ Reset All Data</button>
+                    <button onclick="refreshAdminData()" class="btn-yellow" style="padding:10px 20px;">🔄 Refresh Users</button>
+                </div>
+                <div id="adminActionMsg" style="margin-top:8px;font-size:13px;color:#60a5fa;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODALS -->
+<div id="depositModal" class="modal-overlay">
+    <div class="modal">
+        <h3>💰 Make a Deposit</h3>
+        <div id="depositError" class="error"></div>
+        <input type="number" id="depositAmount" placeholder="Amount ($)" min="1" step="0.01">
+        <input type="text" id="depositDesc" placeholder="Description (optional)">
+        <div class="modal-actions">
+            <button class="cancel" onclick="closeModal('depositModal')">Cancel</button>
+            <button class="btn-green" onclick="processDeposit()" style="background:#22c55e;color:#0a0e1a;">Deposit</button>
+        </div>
+    </div>
+</div>
+
+<div id="withdrawModal" class="modal-overlay">
+    <div class="modal">
+        <h3>💸 Request Withdrawal</h3>
+        <div id="withdrawError" class="error"></div>
+        <input type="number" id="withdrawAmount" placeholder="Amount ($)" min="1" step="0.01">
+        <div class="modal-actions">
+            <button class="cancel" onclick="closeModal('withdrawModal')">Cancel</button>
+            <button class="btn-red" onclick="processWithdraw()" style="background:#ef4444;color:#fff;">Withdraw</button>
+        </div>
+    </div>
+</div>
+
+<div id="profileModal" class="modal-overlay">
+    <div class="modal">
+        <h3>👤 Account Profile</h3>
+        <div id="profileInfo"></div>
+        <div class="modal-actions">
+            <button class="cancel" onclick="closeModal('profileModal')" style="width:100%;">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ============================================================
+// 🔴 REPLACE WITH YOUR JSONBin CREDENTIALS
+// ============================================================
+const JSONBIN_MASTER_KEY = "$2a$10$7LIOruQCVZ2kz.zECoZdOeGnJlwM78ZjJ7K3HxpfglNnITLECcd56";    // <-- Paste X-Master-Key here
+const JSONBIN_ACCESS_KEY = "$2a$10$xMHYZ1JjWrz.hdqeoMgj5.xaafgNlZwUJsmowkE4ix.YISGacYDwa";                          // <-- Paste X-Access-Key here (or leave empty)
+const JSONBIN_BIN_ID = "6a3193beda38895dfecb685c";             // <-- Paste Bin ID here
+// ============================================================
+
+const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
+
+// Build headers with both keys
+function getHeaders() {
+    const headers = {
+        'X-Master-Key': JSONBIN_MASTER_KEY
+    };
+    if (JSONBIN_ACCESS_KEY) {
+        headers['X-Access-Key'] = JSONBIN_ACCESS_KEY;
+    }
+    return headers;
+}
+
+// ============================================================
+// DATA MANAGEMENT
+// ============================================================
+let appData = null;
+let currentUser = null;
+let currentUserData = null;
+let isAdminLoggedIn = false;
+
+async function loadData() {
+    try {
+        const res = await fetch(JSONBIN_URL, {
+            headers: getHeaders()
+        });
+        if (!res.ok) {
+            console.error('HTTP error:', res.status, res.statusText);
+            return null;
+        }
+        const json = await res.json();
+        appData = json.record;
+        return appData;
+    } catch (e) {
+        console.error('Failed to load data:', e);
+        return null;
+    }
+}
+
+async function saveData() {
+    try {
+        const res = await fetch(JSONBIN_URL, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                ...getHeaders()
+            },
+            body: JSON.stringify(appData)
+        });
+        return res.ok;
+    } catch (e) {
+        console.error('Failed to save data:', e);
+        return false;
+    }
+}
+
+// ============================================================
+// AUTH
+// ============================================================
+function showAuthTab(tab) {
+    document.querySelectorAll('.auth-tabs div').forEach(t => t.classList.remove('active'));
+    if (tab === 'login') {
+        document.getElementById('loginForm').classList.remove('hidden');
+        document.getElementById('registerForm').classList.add('hidden');
+        document.querySelector('.auth-tabs div:first-child').classList.add('active');
+    } else {
+        document.getElementById('loginForm').classList.add('hidden');
+        document.getElementById('registerForm').classList.remove('hidden');
+        document.querySelector('.auth-tabs div:last-child').classList.add('active');
+    }
+    document.getElementById('loginError').textContent = '';
+    document.getElementById('registerError').textContent = '';
+    document.getElementById('registerSuccess').textContent = '';
+}
+
+async function userLogin() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+    const err = document.getElementById('loginError');
+
+    if (!username || !password) {
+        err.textContent = '❌ Please enter username and password.';
+        return;
+    }
+
+    await loadData();
+    if (!appData) {
+        err.textContent = '❌ Failed to connect to database. Check your JSONBin keys.';
+        return;
+    }
+
+    // Check admin login
+    if (username === appData.admin.username && password === appData.admin.password) {
+        isAdminLoggedIn = true;
+        currentUser = 'admin';
+        currentUserData = null;
+        enterDashboard('admin');
+        return;
+    }
+
+    // Check user login
+    const user = appData.users[username];
+    if (!user || user.password !== password) {
+        err.textContent = '❌ Invalid username or password.';
+        return;
+    }
+
+    if (user.status === 'frozen') {
+        err.textContent = '❌ Your account is frozen. Contact support.';
+        return;
+    }
+    if (user.status === 'closed') {
+        err.textContent = '❌ This account has been closed.';
+        return;
+    }
+
+    isAdminLoggedIn = false;
+    currentUser = username;
+    currentUserData = user;
+    enterDashboard('user');
+}
+
+async function userRegister() {
+    const username = document.getElementById('regUsername').value.trim();
+    const fullname = document.getElementById('regFullname').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const phone = document.getElementById('regPhone').value.trim();
+    const password = document.getElementById('regPassword').value.trim();
+    const err = document.getElementById('registerError');
+    const success = document.getElementById('registerSuccess');
+
+    if (!username || !fullname || !email || !password) {
+        err.textContent = '❌ Please fill in all required fields.';
+        success.textContent = '';
+        return;
+    }
+
+    await loadData();
+    if (!appData) {
+        err.textContent = '❌ Failed to connect to database.';
+        return;
+    }
+
+    if (appData.users[username]) {
+        err.textContent = '❌ Username already taken.';
+        success.textContent = '';
+        return;
+    }
+
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+
+    appData.users[username] = {
+        fullName: fullname,
+        email: email,
+        phone: phone || '',
+        password: password,
+        balance: 0,
+        invested: 0,
+        profit: 0,
+        plan: 'Basic',
+        status: 'active',
+        createdAt: dateStr,
+        transactions: []
+    };
+
+    await saveData();
+    err.textContent = '';
+    success.textContent = '✅ Account created! You can now login.';
+    document.getElementById('regUsername').value = '';
+    document.getElementById('regFullname').value = '';
+    document.getElementById('regEmail').value = '';
+    document.getElementById('regPhone').value = '';
+    document.getElementById('regPassword').value = '';
+}
+
+function userLogout() {
+    currentUser = null;
+    currentUserData = null;
+    isAdminLoggedIn = false;
+    document.getElementById('authContainer').classList.remove('hidden');
+    document.getElementById('userDashboard').classList.remove('active');
+    document.getElementById('loginUsername').value = '';
+    document.getElementById('loginPassword').value = '';
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function enterDashboard(type) {
+    document.getElementById('authContainer').classList.add('hidden');
+    document.getElementById('userDashboard').classList.add('active');
+
+    if (type === 'admin') {
+        document.getElementById('displayUsername').textContent = 'Admin';
+        document.getElementById('adminBtn').classList.add('hidden');
+        document.getElementById('adminSection').classList.remove('hidden');
+        refreshAdminData();
+    } else {
+        document.getElementById('displayUsername').textContent = currentUserData.fullName || currentUser;
+        document.getElementById('adminBtn').classList.remove('hidden');
+        document.getElementById('adminSection').classList.add('hidden');
+        refreshUserData();
+    }
+}
+
+function switchToAdmin() {
+    userLogout();
+}
+
+// ============================================================
+// USER FUNCTIONS
+// ============================================================
+async function refreshUserData() {
+    await loadData();
+    if (!appData || !appData.users[currentUser]) {
+        alert('Session expired. Please login again.');
+        userLogout();
+        return;
+    }
+    currentUserData = appData.users[currentUser];
+
+    document.getElementById('userBalance').textContent = '$' + currentUserData.balance.toFixed(2);
+    document.getElementById('userInvested').textContent = '$' + currentUserData.invested.toFixed(2);
+    document.getElementById('userProfit').textContent = '$' + currentUserData.profit.toFixed(2);
+    document.getElementById('userPlan').textContent = currentUserData.plan;
+
+    const tbody = document.getElementById('userTransactions');
+    const txs = currentUserData.transactions || [];
+    if (txs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#64748b;">No transactions yet.</td></tr>';
+    } else {
+        tbody.innerHTML = txs.slice().reverse().map(tx => {
+            const badgeClass = tx.type === 'deposit' ? 'deposit' : tx.type === 'profit' ? 'profit' : 'withdraw';
+            const amountClass = (tx.type === 'deposit' || tx.type === 'profit') ? 'amount-green' : 'amount-red';
+            const sign = (tx.type === 'deposit' || tx.type === 'profit') ? '+' : '-';
+            return `<tr>
+                <td>${escHtml(tx.date)}</td>
+                <td><span class="badge ${badgeClass}">${escHtml(tx.type)}</span></td>
+                <td class="${amountClass}">${sign}$${Math.abs(tx.amount).toFixed(2)}</td>
+                <td>${escHtml(tx.description || '')}</td>
+            </tr>`;
+        }).join('');
+    }
+}
+
+function showDepositModal() {
+    document.getElementById('depositError').textContent = '';
+    document.getElementById('depositAmount').value = '';
+    document.getElementById('depositDesc').value = '';
+    document.getElementById('depositModal').classList.add('active');
+}
+
+function showWithdrawModal() {
+    document.getElementById('withdrawError').textContent = '';
+    document.getElementById('withdrawAmount').value = '';
+    document.getElementById('withdrawModal').classList.add('active');
+}
+
+function showProfileModal() {
+    const info = document.getElementById('profileInfo');
+    info.innerHTML = `
+        <div style="margin-bottom:12px;"><strong style="color:#94a3b8;">Name:</strong> ${escHtml(currentUserData.fullName)}</div>
+        <div style="margin-bottom:12px;"><strong style="color:#94a3b8;">Username:</strong> ${escHtml(currentUser)}</div>
+        <div style="margin-bottom:12px;"><strong style="color:#94a3b8;">Email:</strong> ${escHtml(currentUserData.email)}</div>
+        <div style="margin-bottom:12px;"><strong style="color:#94a3b8;">Phone:</strong> ${escHtml(currentUserData.phone || 'N/A')}</div>
+        <div style="margin-bottom:12px;"><strong style="color:#94a3b8;">Plan:</strong> ${escHtml(currentUserData.plan)}</div>
+        <div style="margin-bottom:12px;"><strong style="color:#94a3b8;">Status:</strong> <span class="badge ${currentUserData.status}">${escHtml(currentUserData.status)}</span></div>
+        <div style="margin-bottom:12px;"><strong style="color:#94a3b8;">Joined:</strong> ${escHtml(currentUserData.createdAt)}</div>
+        <div><strong style="color:#94a3b8;">Balance:</strong> <span class="amount-green">$${currentUserData.balance.toFixed(2)}</span></div>
+    `;
+    document.getElementById('profileModal').classList.add('active');
+}
+
+async function processDeposit() {
+    const amount = parseFloat(document.getElementById('depositAmount').value);
+    const desc = document.getElementById('depositDesc').value.trim();
+    const err = document.getElementById('depositError');
+
+    if (!amount || amount <= 0) {
+        err.textContent = '❌ Please enter a valid amount.';
+        return;
+    }
+
+    await loadData();
+    const user = appData.users[currentUser];
+    if (!user) { err.textContent = '❌ Session expired.'; return; }
+
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+    user.balance += amount;
+    user.invested += amount;
+    if (!user.transactions) user.transactions = [];
+    user.transactions.push({
+        date: dateStr,
+        type: 'deposit',
+        amount: amount,
+        description: desc || 'Deposit'
+    });
+
+    appData.users[currentUser] = user;
+    await saveData();
+    closeModal('depositModal');
+    refreshUserData();
+}
+
+async function processWithdraw() {
+    const amount = parseFloat(document.getElementById('withdrawAmount').value);
+    const err = document.getElementById('withdrawError');
+
+    if (!amount || amount <= 0) {
+        err.textContent = '❌ Please enter a valid amount.';
+        return;
+    }
+
+    await loadData();
+    const user = appData.users[currentUser];
+    if (!user) { err.textContent = '❌ Session expired.'; return; }
+
+    if (amount > user.balance) {
+        err.textContent = '❌ Insufficient balance.';
+        return;
+    }
+
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+    user.balance -= amount;
+    if (!user.transactions) user.transactions = [];
+    user.transactions.push({
+        date: dateStr,
+        type: 'withdraw',
+        amount: -amount,
+        description: 'Withdrawal'
+    });
+
+    appData.users[currentUser] = user;
+    await saveData();
+    closeModal('withdrawModal');
+    refreshUserData();
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+
+// ============================================================
+// ADMIN FUNCTIONS
+// ============================================================
+async function refreshAdminData() {
+    await loadData();
+    if (!appData) {
+        document.getElementById('adminUserCards').innerHTML = '<p style="color:#ef4444;">Failed to load data.</p>';
+        return;
+    }
+
+    const container = document.getElementById('adminUserCards');
+    const users = appData.users || {};
+
+    if (Object.keys(users).length === 0) {
+        container.innerHTML = '<p style="color:#64748b;">No users registered yet.</p>';
+        return;
+    }
+
+    container.innerHTML = '';
+    for (const [username, user] of Object.entries(users)) {
+        const card = document.createElement('div');
+        card.className = 'admin-card';
+        card.innerHTML = `
+            <div class="user-header">
+                <h4>${escHtml(user.fullName || username)}</h4>
+                <span class="badge ${user.status}">${escHtml(user.status)}</span>
+            </div>
+            <div class="user-detail"><strong>Username:</strong> ${escHtml(username)}</div>
+            <div class="user-detail"><strong>Email:</strong> ${escHtml(user.email)}</div>
+            <div class="user-detail"><strong>Balance:</strong> <span class="amount-green">$${user.balance.toFixed(2)}</span></div>
+            <div class="user-detail"><strong>Invested:</strong> $${user.invested.toFixed(2)}</div>
+            <div class="user-detail"><strong>Profit:</strong> <span class="amount-green">+$${user.profit.toFixed(2)}</span></div>
+            <div class="user-detail"><strong>Plan:</strong> ${escHtml(user.plan)}</div>
+            <div class="user-detail"><strong>Joined:</strong> ${escHtml(user.createdAt)}</div>
+            <div class="user-detail"><strong>Transactions:</strong> ${(user.transactions || []).length}</div>
+            <div class="admin-actions">
+                <input type="number" id="adjust-${escHtml(username)}" placeholder="Amount" step="0.01">
+                <button class="btn-green" onclick="adminAdjustBalance('${escHtml(username)}')">Add</button>
+                <button class="btn-red" onclick="adminDeductBalance('${escHtml(username)}')">Deduct</button>
+                <select id="status-${escHtml(username)}" style="padding:6px;background:#1e293b;border:1px solid #334155;border-radius:4px;color:#fff;font-size:12px;">
+                    <option value="active" ${user.status==='active'?'selected':''}>Active</option>
+                    <option value="frozen" ${user.status==='frozen'?'selected':''}>Frozen</option>
+                    <option value="closed" ${user.status==='closed'?'selected':''}>Closed</option>
+                </select>
+                <button class="btn-blue" onclick="adminUpdateStatus('${escHtml(username)}')">Set</button>
+                <button class="btn-red" onclick="adminDeleteUser('${escHtml(username)}')">🗑 Delete</button>
+            </div>
+        `;
+        container.appendChild(card);
+    }
+}
+
+async function adminAdjustBalance(username) {
+    const amount = parseFloat(document.getElementById('adjust-' + username).value);
+    if (!amount || amount <= 0) { alert('Enter a valid amount.'); return; }
+
+    await loadData();
+    const user = appData.users[username];
+    if (!user) { alert('User not found.'); return; }
+
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+    user.balance += amount;
+    user.profit += amount;
+    if (!user.transactions) user.transactions = [];
+    user.transactions.push({
+        date: dateStr,
+        type: 'profit',
+        amount: amount,
+        description: 'Admin adjustment'
+    });
+
+    await saveData();
+    refreshAdminData();
+    document.getElementById('adjust-' + username).value = '';
+}
+
+async function adminDeductBalance(username) {
+    const amount = parseFloat(document.getElementById('adjust-' + username).value);
+    if (!amount || amount <= 0) { alert('Enter a valid amount.'); return; }
+
+    await loadData();
+    const user = appData.users[username];
+    if (!user) { alert('User not found.'); return; }
+    if (amount > user.balance) { alert('Insufficient balance.'); return; }
+
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+    user.balance -= amount;
+    if (!user.transactions) user.transactions = [];
+    user.transactions.push({
+        date: dateStr,
+        type: 'withdraw',
+        amount: -amount,
+        description: 'Admin deduction'
+    });
+
+    await saveData();
+    refreshAdminData();
+    document.getElementById('adjust-' + username).value = '';
+}
+
+async function adminUpdateStatus(username) {
+    const status = document.getElementById('status-' + username).value;
+    await loadData();
+    const user = appData.users[username];
+    if (!user) { alert('User not found.'); return; }
+    user.status = status;
+    await saveData();
+    refreshAdminData();
+}
+
+async function adminDeleteUser(username) {
+    if (!confirm(`Permanently delete user "${username}"? This cannot be undone.`)) return;
+    await loadData();
+    delete appData.users[username];
+    await saveData();
+    refreshAdminData();
+}
+
+async function adminCreateUser() {
+    const username = document.getElementById('adminNewUser').value.trim();
+    const password = document.getElementById('adminNewPass').value.trim();
+    const fullName = document.getElementById('adminNewName').value.trim();
+    const msg = document.getElementById('adminCreateMsg');
+
+    if (!username || !password || !fullName) {
+        msg.textContent = '❌ Fill in all fields.';
+        msg.style.color = '#ef4444';
+        return;
+    }
+
+    await loadData();
+    if (appData.users[username]) {
+        msg.textContent = '❌ Username already exists.';
+        msg.style.color = '#ef4444';
+        return;
+    }
+
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+
+    appData.users[username] = {
+        fullName: fullName,
+        email: '',
+        phone: '',
+        password: password,
+        balance: 0,
+        invested: 0,
+        profit: 0,
+        plan: 'Basic',
+        status: 'active',
+        createdAt: dateStr,
+        transactions: []
+    };
+
+    await saveData();
+    msg.textContent = `✅ User "${username}" created successfully!`;
+    msg.style.color = '#22c55e';
+    document.getElementById('adminNewUser').value = '';
+    document.getElementById('adminNewPass').value = '';
+    document.getElementById('adminNewName').value = '';
+    refreshAdminData();
+}
+
+async function adminPayAllProfits() {
+    const msg = document.getElementById('adminActionMsg');
+    if (!confirm('Pay 5% profit to all active users?')) return;
+
+    await loadData();
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    let count = 0;
+
+    for (const [username, user] of Object.entries(appData.users)) {
+        if (user.status !== 'active') continue;
+        if (user.balance <= 0) continue;
+
+        const profit = user.balance * 0.05;
+        user.balance += profit;
+        user.profit += profit;
+        if (!user.transactions) user.transactions = [];
+        user.transactions.push({
+            date: dateStr,
+            type: 'profit',
+            amount: profit,
+            description: 'Monthly profit (5%)'
+        });
+        count++;
+    }
+
+    await saveData();
+    msg.textContent = `✅ 5% profit paid to ${count} active users.`;
+    refreshAdminData();
+}
+
+async function adminResetAll() {
+    if (!confirm('⚠️ WARNING: This will DELETE ALL user data except the admin account. Continue?')) return;
+    if (!confirm('Are you absolutely sure? All users, balances, and transactions will be lost.')) return;
+
+    await loadData();
+    appData.users = {};
+    await saveData();
+    refreshAdminData();
+    document.getElementById('adminActionMsg').textContent = '✅ All user data has been reset.';
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function escHtml(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('active');
+    });
+});
+</script>
+</body>
+</html>
