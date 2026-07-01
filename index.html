@@ -5,154 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>VertexSwap Pro</title>
     <style>
-        /* ===== RESET & BASE ===== */
-        * { margin:0; padding:0; box-sizing:border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
-        body { background:#0b0e14; color:#e8edf5; min-height:100vh; display:flex; flex-direction:column; }
+        *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+        body{background:#0b0e14;color:#e8edf5;min-height:100vh;display:flex;flex-direction:column}
 
-        /* ===== AUTH PAGES ===== */
-        .auth-page {
-            display:flex; align-items:center; justify-content:center; min-height:100vh;
-            background: radial-gradient(ellipse at center, #141b26 0%, #0b0e14 70%);
-            padding:20px;
-        }
-        .auth-card {
-            background:#151e2a; border-radius:18px; padding:40px 36px; width:100%; max-width:420px;
-            box-shadow:0 20px 60px rgba(0,0,0,0.6); border:1px solid #253040;
-        }
-        .auth-card h1 { font-size:26px; margin-bottom:4px; background:linear-gradient(135deg,#00c9ff,#92fe9d); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-        .auth-card p.sub { color:#7a8ba3; margin-bottom:28px; font-size:14px; }
-        .auth-card label { display:block; font-size:13px; color:#9aabc1; margin-bottom:5px; }
-        .auth-card input { width:100%; padding:12px 14px; background:#0f1620; border:1px solid #253040; border-radius:10px; color:#fff; font-size:14px; margin-bottom:16px; transition:.2s; }
-        .auth-card input:focus { outline:none; border-color:#00c9ff; box-shadow:0 0 0 3px rgba(0,201,255,0.15); }
-        .auth-card button { width:100%; padding:13px; border:none; border-radius:10px; font-size:15px; font-weight:600; cursor:pointer; background:linear-gradient(135deg,#00c9ff,#92fe9d); color:#0b0e14; transition:.3s; }
-        .auth-card button:hover { transform:translateY(-1px); box-shadow:0 8px 25px rgba(0,201,255,0.3); }
-        .auth-card .alt-link { text-align:center; margin-top:18px; font-size:13px; color:#7a8ba3; }
-        .auth-card .alt-link a { color:#00c9ff; text-decoration:none; cursor:pointer; }
-        .auth-card .alt-link a:hover { text-decoration:underline; }
-        .auth-error { background:#2d1414; color:#ff6b6b; padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:16px; display:none; border:1px solid #4a1c1c; }
+        /* --- Auth --- */
+        .auth-page{display:flex;align-items:center;justify-content:center;min-height:100vh;background:radial-gradient(ellipse at center,#141b26 0%,#0b0e14 70%);padding:20px}
+        .auth-card{background:#151e2a;border-radius:18px;padding:40px 36px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.6);border:1px solid #253040}
+        .auth-card h1{font-size:26px;margin-bottom:4px;background:linear-gradient(135deg,#00c9ff,#92fe9d);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .auth-card p.sub{color:#7a8ba3;margin-bottom:28px;font-size:14px}
+        .auth-card label{display:block;font-size:13px;color:#9aabc1;margin-bottom:5px}
+        .auth-card input{width:100%;padding:12px 14px;background:#0f1620;border:1px solid #253040;border-radius:10px;color:#fff;font-size:14px;margin-bottom:16px;transition:.2s}
+        .auth-card input:focus{outline:none;border-color:#00c9ff;box-shadow:0 0 0 3px rgba(0,201,255,.15)}
+        .auth-card button{width:100%;padding:13px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;background:linear-gradient(135deg,#00c9ff,#92fe9d);color:#0b0e14;transition:.3s}
+        .auth-card button:hover{transform:translateY(-1px);box-shadow:0 8px 25px rgba(0,201,255,.3)}
+        .auth-card .alt-link{text-align:center;margin-top:18px;font-size:13px;color:#7a8ba3}
+        .auth-card .alt-link a{color:#00c9ff;text-decoration:none;cursor:pointer}
+        .auth-card .alt-link a:hover{text-decoration:underline}
+        .auth-error{background:#2d1414;color:#ff6b6b;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;display:none;border:1px solid #4a1c1c}
 
-        /* ===== MAIN APP LAYOUT ===== */
-        .app-container { display:none; flex-direction:column; min-height:100vh; }
-        .app-container.active { display:flex; }
+        /* --- App --- */
+        .app-container{display:none;flex-direction:column;min-height:100vh}
+        .app-container.active{display:flex}
+        .topbar{background:#111924;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1f2b3a;position:sticky;top:0;z-index:100}
+        .topbar .logo{font-size:20px;font-weight:700;background:linear-gradient(135deg,#00c9ff,#92fe9d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;cursor:pointer;user-select:none}
+        .topbar .user-info{display:flex;align-items:center;gap:14px}
+        .topbar .user-info span{color:#9aabc1;font-size:13px}
+        .topbar .user-info .bal{color:#92fe9d;font-weight:600}
+        .topbar .logout-btn{background:#253040;border:none;color:#e8edf5;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:13px}
+        .topbar .logout-btn:hover{background:#314257}
+        .announcement{background:#1a2533;margin:16px 24px 0;padding:12px 18px;border-radius:10px;border-left:4px solid #ffc107;font-size:13px;color:#ffd966;display:none}
+        .announcement.show{display:block}
+        .main{flex:1;padding:20px 24px 80px;max-width:1100px;width:100%;margin:0 auto}
+        .section-title{font-size:18px;font-weight:600;margin:28px 0 14px;color:#c8d6e5;display:flex;align-items:center;gap:8px}
+        .section-title:first-of-type{margin-top:8px}
+        .section-title small{font-weight:400;font-size:12px;color:#7a8ba3}
+        .feature-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
+        .feature-card{background:#151e2a;border:1px solid #1f2b3a;border-radius:14px;padding:18px 12px 14px;text-align:center;cursor:pointer;transition:.25s;position:relative}
+        .feature-card:hover{border-color:#3a5068;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+        .feature-card.locked{opacity:.55;cursor:not-allowed}
+        .feature-card.locked:hover{transform:none;border-color:#1f2b3a;box-shadow:none}
+        .feature-card .icon-wrap{height:44px;display:flex;align-items:center;justify-content:center;margin-bottom:8px}
+        .feature-card .icon-wrap svg{width:36px;height:36px;fill:#92fe9d}
+        .feature-card .fname{font-size:13px;font-weight:500;color:#e8edf5}
+        .feature-card .fdep{font-size:11px;color:#7a8ba3;margin-top:4px}
+        .feature-card .lock-badge{position:absolute;top:8px;right:10px;font-size:12px;color:#ff6b6b}
 
-        /* top bar */
-        .topbar {
-            background:#111924; padding:14px 24px; display:flex; align-items:center; justify-content:space-between;
-            border-bottom:1px solid #1f2b3a; position:sticky; top:0; z-index:100;
-        }
-        .topbar .logo { font-size:20px; font-weight:700; background:linear-gradient(135deg,#00c9ff,#92fe9d); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-        .topbar .user-info { display:flex; align-items:center; gap:14px; }
-        .topbar .user-info span { color:#9aabc1; font-size:13px; }
-        .topbar .user-info .bal { color:#92fe9d; font-weight:600; }
-        .topbar .logout-btn { background:#253040; border:none; color:#e8edf5; padding:7px 16px; border-radius:8px; cursor:pointer; font-size:13px; transition:.2s; }
-        .topbar .logout-btn:hover { background:#314257; }
-
-        /* announcement banner */
-        .announcement {
-            background:#1a2533; margin:16px 24px 0; padding:12px 18px; border-radius:10px;
-            border-left:4px solid #ffc107; font-size:13px; color:#ffd966; display:none;
-        }
-        .announcement.show { display:block; }
-
-        /* main content */
-        .main { flex:1; padding:20px 24px 80px; max-width:1100px; width:100%; margin:0 auto; }
-
-        /* section heading */
-        .section-title { font-size:18px; font-weight:600; margin:28px 0 14px; color:#c8d6e5; display:flex; align-items:center; gap:8px; }
-        .section-title:first-of-type { margin-top:8px; }
-        .section-title small { font-weight:400; font-size:12px; color:#7a8ba3; }
-
-        /* feature grid */
-        .feature-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:14px; }
-        .feature-card {
-            background:#151e2a; border:1px solid #1f2b3a; border-radius:14px; padding:18px 12px 14px;
-            text-align:center; cursor:pointer; transition:.25s; position:relative;
-        }
-        .feature-card:hover { border-color:#3a5068; transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.3); }
-        .feature-card.locked { opacity:0.55; cursor:not-allowed; }
-        .feature-card.locked:hover { transform:none; border-color:#1f2b3a; box-shadow:none; }
-        .feature-card .icon-wrap { height:44px; display:flex; align-items:center; justify-content:center; margin-bottom:8px; }
-        .feature-card .icon-wrap svg { width:36px; height:36px; fill:#92fe9d; }
-        .feature-card .fname { font-size:13px; font-weight:500; color:#e8edf5; }
-        .feature-card .fdep { font-size:11px; color:#7a8ba3; margin-top:4px; }
-        .feature-card .lock-badge { position:absolute; top:8px; right:10px; font-size:12px; color:#ff6b6b; }
-
-        /* ===== DEPOSIT / MODAL ===== */
-        .modal-overlay {
-            display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:999;
-            align-items:center; justify-content:center; padding:20px;
-        }
-        .modal-overlay.show { display:flex; }
-        .modal {
-            background:#151e2a; border-radius:16px; width:100%; max-width:460px; padding:30px 28px;
-            border:1px solid #253040; box-shadow:0 25px 70px rgba(0,0,0,0.7);
-            max-height:90vh; overflow-y:auto;
-        }
-        .modal h2 { font-size:20px; margin-bottom:4px; }
-        .modal p.sub2 { color:#7a8ba3; font-size:13px; margin-bottom:18px; }
-        .modal label { display:block; font-size:13px; color:#9aabc1; margin-bottom:5px; margin-top:14px; }
-        .modal input, .modal select, .modal textarea {
-            width:100%; padding:11px 14px; background:#0f1620; border:1px solid #253040; border-radius:10px;
-            color:#fff; font-size:14px; margin-bottom:6px; transition:.2s;
-        }
-        .modal select { appearance:auto; }
-        .modal input:focus, .modal select:focus { outline:none; border-color:#00c9ff; }
-        .modal .btn-primary {
-            width:100%; padding:13px; border:none; border-radius:10px; font-size:15px; font-weight:600;
-            cursor:pointer; background:linear-gradient(135deg,#00c9ff,#92fe9d); color:#0b0e14; margin-top:18px; transition:.3s;
-        }
-        .modal .btn-primary:hover { box-shadow:0 8px 25px rgba(0,201,255,0.3); }
-        .modal .btn-danger { background:#2d1414; color:#ff6b6b; border:1px solid #4a1c1c; }
-        .modal .btn-danger:hover { background:#3f1c1c; }
-        .modal .btn-secondary { background:#253040; color:#e8edf5; border:1px solid #314257; }
-        .modal .btn-secondary:hover { background:#314257; }
-        .modal .close-btn { float:right; background:none; border:none; color:#7a8ba3; font-size:22px; cursor:pointer; }
-        .modal .deposit-address { background:#0f1620; padding:12px; border-radius:8px; text-align:center; font-size:13px; color:#92fe9d; word-break:break-all; margin:10px 0; }
-        .modal .payment-methods { display:flex; gap:10px; margin:10px 0; }
-        .modal .payment-methods button {
-            flex:1; padding:10px; border:1px solid #253040; border-radius:8px; background:#0f1620; color:#e8edf5; cursor:pointer; font-size:13px; transition:.2s;
-        }
-        .modal .payment-methods button.active { border-color:#00c9ff; background:#1a2a3a; }
-        .modal .qr-placeholder { width:150px; height:150px; background:#0f1620; border-radius:10px; margin:12px auto; display:flex; align-items:center; justify-content:center; color:#7a8ba3; font-size:12px; border:1px dashed #253040; }
-
-        /* admin table */
-        .admin-table { width:100%; border-collapse:collapse; margin-top:12px; font-size:13px; }
-        .admin-table th { text-align:left; padding:10px 8px; color:#7a8ba3; border-bottom:1px solid #1f2b3a; font-weight:500; }
-        .admin-table td { padding:10px 8px; border-bottom:1px solid #19222f; }
-        .admin-table .btn-sm { padding:5px 12px; border:none; border-radius:6px; cursor:pointer; font-size:12px; }
-        .admin-table .btn-sm.green { background:#1a3a2a; color:#92fe9d; }
-        .admin-table .btn-sm.red { background:#3a1a1a; color:#ff6b6b; }
-        .admin-table .btn-sm.blue { background:#1a2a3a; color:#66b0ff; }
-
-        .tabs { display:flex; gap:4px; margin-bottom:16px; background:#0f1620; border-radius:10px; padding:4px; }
-        .tabs button { flex:1; padding:9px; background:transparent; border:none; color:#7a8ba3; cursor:pointer; border-radius:8px; font-size:13px; transition:.2s; }
-        .tabs button.active { background:#253040; color:#e8edf5; }
-
-        .toast { position:fixed; bottom:30px; right:30px; background:#1a2a3a; border:1px solid #253040; border-radius:10px; padding:14px 20px; color:#e8edf5; font-size:13px; z-index:2000; display:none; box-shadow:0 10px 40px rgba(0,0,0,0.5); }
-        .toast.show { display:block; animation:slideIn .3s ease; }
-        @keyframes slideIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-
-        .hidden { display:none !important; }
-        .flex-between { display:flex; justify-content:space-between; align-items:center; }
-
-        /* ===== DEPOSIT HISTORY ===== */
-        .deposit-item { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #19222f; font-size:13px; }
-        .deposit-item .status { padding:3px 10px; border-radius:20px; font-size:11px; }
-        .status.pending { background:#2a2a1a; color:#ffc107; }
-        .status.approved { background:#1a3a2a; color:#92fe9d; }
-        .status.rejected { background:#3a1a1a; color:#ff6b6b; }
-
-        @media (max-width:600px) {
-            .feature-grid { grid-template-columns:repeat(2,1fr); }
-            .topbar { padding:12px 14px; flex-wrap:wrap; gap:8px; }
-            .main { padding:14px 14px 60px; }
-            .modal { padding:20px 16px; }
-        }
+        /* --- Modal --- */
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:999;align-items:center;justify-content:center;padding:20px}
+        .modal-overlay.show{display:flex}
+        .modal{background:#151e2a;border-radius:16px;width:100%;max-width:480px;padding:30px 28px;border:1px solid #253040;box-shadow:0 25px 70px rgba(0,0,0,.7);max-height:90vh;overflow-y:auto}
+        .modal h2{font-size:20px;margin-bottom:4px}
+        .modal p.sub2{color:#7a8ba3;font-size:13px;margin-bottom:18px}
+        .modal label{display:block;font-size:13px;color:#9aabc1;margin-bottom:5px;margin-top:14px}
+        .modal input,.modal select,.modal textarea{width:100%;padding:11px 14px;background:#0f1620;border:1px solid #253040;border-radius:10px;color:#fff;font-size:14px;margin-bottom:6px}
+        .modal select{appearance:auto}
+        .modal input:focus,.modal select:focus{outline:none;border-color:#00c9ff}
+        .modal .btn-primary{width:100%;padding:13px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;background:linear-gradient(135deg,#00c9ff,#92fe9d);color:#0b0e14;margin-top:18px}
+        .modal .btn-primary:hover{box-shadow:0 8px 25px rgba(0,201,255,.3)}
+        .modal .btn-danger{background:#2d1414;color:#ff6b6b;border:1px solid #4a1c1c}
+        .modal .btn-secondary{background:#253040;color:#e8edf5;border:1px solid #314257}
+        .modal .close-btn{float:right;background:none;border:none;color:#7a8ba3;font-size:22px;cursor:pointer;line-height:1}
+        .deposit-address{background:#0f1620;padding:12px;border-radius:8px;text-align:center;font-size:13px;color:#92fe9d;word-break:break-all;margin:10px 0;cursor:pointer;border:1px dashed #253040;transition:.2s}
+        .deposit-address:hover{border-color:#00c9ff;background:#1a2533}
+        .deposit-address.copied{border-color:#92fe9d;color:#92fe9d}
+        .payment-methods{display:flex;gap:10px;margin:10px 0}
+        .payment-methods button{flex:1;padding:10px;border:1px solid #253040;border-radius:8px;background:#0f1620;color:#e8edf5;cursor:pointer;font-size:13px;transition:.2s}
+        .payment-methods button.active{border-color:#00c9ff;background:#1a2a3a}
+        .admin-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+        .admin-table th{text-align:left;padding:10px 8px;color:#7a8ba3;border-bottom:1px solid #1f2b3a;font-weight:500}
+        .admin-table td{padding:10px 8px;border-bottom:1px solid #19222f}
+        .admin-table .btn-sm{padding:5px 12px;border:none;border-radius:6px;cursor:pointer;font-size:12px}
+        .admin-table .btn-sm.green{background:#1a3a2a;color:#92fe9d}
+        .admin-table .btn-sm.red{background:#3a1a1a;color:#ff6b6b}
+        .admin-table .btn-sm.blue{background:#1a2a3a;color:#66b0ff}
+        .tabs{display:flex;gap:4px;margin-bottom:16px;background:#0f1620;border-radius:10px;padding:4px}
+        .tabs button{flex:1;padding:9px;background:transparent;border:none;color:#7a8ba3;cursor:pointer;border-radius:8px;font-size:13px}
+        .tabs button.active{background:#253040;color:#e8edf5}
+        .toast{position:fixed;bottom:30px;right:30px;background:#1a2a3a;border:1px solid #253040;border-radius:10px;padding:14px 20px;color:#e8edf5;font-size:13px;z-index:2000;display:none;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+        .toast.show{display:block;animation:slideIn .3s ease}
+        @keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        .hidden{display:none!important}
+        .deposit-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #19222f;font-size:13px;align-items:center}
+        .deposit-item .status{padding:3px 10px;border-radius:20px;font-size:11px}
+        .status.pending{background:#2a2a1a;color:#ffc107}
+        .status.approved{background:#1a3a2a;color:#92fe9d}
+        .status.rejected{background:#3a1a1a;color:#ff6b6b}
+        @media(max-width:600px){.feature-grid{grid-template-columns:repeat(2,1fr)}.topbar{padding:12px 14px;flex-wrap:wrap;gap:8px}.main{padding:14px 14px 60px}.modal{padding:20px 16px}}
     </style>
 </head>
 <body>
 
-<!-- ===== LOGIN PAGE ===== -->
+<!-- ===== LOGIN ===== -->
 <div id="loginPage" class="auth-page">
     <div class="auth-card">
         <h1>VertexSwap</h1>
@@ -163,12 +106,12 @@
         <label>Password</label>
         <input type="password" id="loginPass" placeholder="Enter password" />
         <button onclick="handleLogin()">Sign In</button>
-        <div class="alt-link">Don't have an account? <a onclick="showRegister()">Register</a></div>
+        <div class="alt-link">Don't have an account? <a onclick="showReg()">Register</a></div>
     </div>
 </div>
 
-<!-- ===== REGISTER PAGE ===== -->
-<div id="registerPage" class="auth-page" style="display:none;">
+<!-- ===== REGISTER ===== -->
+<div id="registerPage" class="auth-page" style="display:none">
     <div class="auth-card">
         <h1>Create Account</h1>
         <p class="sub">Join VertexSwap today</p>
@@ -180,260 +123,201 @@
         <label>Password</label>
         <input type="password" id="regPass" placeholder="Create password" />
         <button onclick="handleRegister()">Register</button>
-        <div class="alt-link">Already registered? <a onclick="showLogin()">Sign in</a></div>
+        <div class="alt-link">Already registered? <a onclick="showLog()">Sign in</a></div>
     </div>
 </div>
 
 <!-- ===== MAIN APP ===== -->
 <div id="appContainer" class="app-container">
-    <!-- Top Bar -->
     <div class="topbar">
-        <div class="logo">VertexSwap</div>
+        <div class="logo" id="logoEl">VertexSwap</div>
         <div class="user-info">
             <span id="displayUser">user</span>
             <span>| Balance: <span class="bal" id="displayBal">$0.00</span></span>
             <button class="logout-btn" onclick="handleLogout()">Logout</button>
         </div>
     </div>
-
-    <!-- Announcement -->
     <div id="announcementBar" class="announcement"></div>
-
-    <!-- Main Content -->
     <div class="main">
-
-        <!-- Video Calls Section -->
         <div class="section-title">📹 Video Calls <small>face-swap calls</small></div>
         <div class="feature-grid" id="gridVideo"></div>
-
-        <!-- Spoofing Section -->
         <div class="section-title">🕵️ Spoofing <small>anonymous tools</small></div>
         <div class="feature-grid" id="gridSpoof"></div>
-
-        <!-- Services Section -->
         <div class="section-title">🏢 Services <small>premium services</small></div>
         <div class="feature-grid" id="gridServices"></div>
-
     </div>
 </div>
 
-<!-- ===== MODAL OVERLAY ===== -->
-<div id="modalOverlay" class="modal-overlay">
-    <div class="modal" id="modalContent"></div>
-</div>
-
-<!-- ===== TOAST ===== -->
+<!-- ===== MODAL ===== -->
+<div id="modalOverlay" class="modal-overlay"><div class="modal" id="modalContent"></div></div>
 <div id="toast" class="toast"></div>
+
+<!-- ===== FIREBASE SDK ===== -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 
 <script>
 // ============================================================
-//  DATA LAYER — all persisted to localStorage
+//  FIREBASE CONFIG — REPLACE WITH YOUR OWN
 // ============================================================
-
-const DB = {
-    // ---------- users ----------
-    getUsers() {
-        return JSON.parse(localStorage.getItem('vs_users') || '[]');
-    },
-    saveUsers(users) {
-        localStorage.setItem('vs_users', JSON.stringify(users));
-    },
-    findUser(username) {
-        return this.getUsers().find(u => u.username === username);
-    },
-    // ---------- deposits ----------
-    getDeposits() {
-        return JSON.parse(localStorage.getItem('vs_deposits') || '[]');
-    },
-    saveDeposits(deps) {
-        localStorage.setItem('vs_deposits', JSON.stringify(deps));
-    },
-    // ---------- settings ----------
-    getSettings() {
-        return JSON.parse(localStorage.getItem('vs_settings') || '{"minDeposit":50,"announcement":"","btcWallet":"bc1qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","usdtWallet":"TRXxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}');
-    },
-    saveSettings(s) {
-        localStorage.setItem('vs_settings', JSON.stringify(s));
-    },
-    // ---------- current user ----------
-    getCurrent() {
-        return localStorage.getItem('vs_current') || null;
-    },
-    setCurrent(u) {
-        if (u) localStorage.setItem('vs_current', u);
-        else localStorage.removeItem('vs_current');
-    }
+const firebaseConfig = {
+    apiKey: "AIzaSyAEERy5Jbnns9CUurD7NwmOXXXXXXXXXX",
+    authDomain: "testing-XXXXX-db.firebaseapp.com",
+    databaseURL: "https://testing-XXXXX-db.firebaseio.com",
+    projectId: "testing-XXXXXX-db",
+    storageBucket: "testing-XXXXX-db.appspot.com",
+    messagingSenderId: "25861013XXXX",
+    appId: "1:25861013XXXX:web:XXXXXXXXXXXXXX"
 };
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ============================================================
+//  HELPERS
+// ============================================================
+const $ = id => document.getElementById(id);
+const errDiv = (id, msg) => { const e=$(id); e.textContent=msg; e.style.display='block'; };
+
+function showToast(msg) {
+    const t=$('toast'); t.textContent=msg; t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),3500);
+}
+function closeModal() { $('modalOverlay').classList.remove('show'); }
+$('modalOverlay').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
 
 // ============================================================
 //  FEATURES DEFINITION
 // ============================================================
-
 const FEATURES = [
-    // Video Calls
     { cat:'video', id:'whatsapp', name:'WhatsApp FaceSwap', deposit:25, icon:'whatsapp' },
     { cat:'video', id:'wechat',   name:'WeChat FaceSwap',   deposit:30, icon:'wechat' },
     { cat:'video', id:'facebook', name:'Facebook FaceSwap',  deposit:35, icon:'facebook' },
     { cat:'video', id:'telegram', name:'Telegram FaceSwap',  deposit:20, icon:'telegram' },
-    // Spoofing
     { cat:'spoof', id:'spoofmail', name:'Spoof Email', deposit:40, icon:'email' },
     { cat:'spoof', id:'spoofcall', name:'Spoof Call',  deposit:50, icon:'phone' },
-    // Services
     { cat:'service', id:'shipping', name:'Shipping Company', deposit:60, icon:'ship' },
     { cat:'service', id:'banking',  name:'Banking Services',  deposit:75, icon:'bank' },
 ];
 
-// ============================================================
-//  SVG ICONS (inline)
-// ============================================================
-
 const ICONS = {
-    whatsapp: `<svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/></svg>`,
-
-    wechat: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.33.33 0 0 0 .167-.054l1.903-1.114a.87.87 0 0 1 .723-.098 10.16 10.16 0 0 0 2.83.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178A1.17 1.17 0 0 1 4.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178 1.17 1.17 0 0 1-1.162-1.178c0-.651.52-1.18 1.162-1.18zm5.34 2.867c-1.797-.052-3.746.512-5.28 1.786-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 3.666 4.229 6.884 4.229.826 0 1.622-.12 2.361-.336a.73.73 0 0 1 .603.082l1.587.928a.27.27 0 0 0 .139.045.246.246 0 0 0 .242-.246c0-.06-.024-.12-.04-.178l-.325-1.233a.492.492 0 0 1 .178-.554C23.028 18.48 24 16.82 24 14.98c0-3.21-2.931-5.837-7.062-6.122zM14.033 14.2c.535 0 .969.44.969.983a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.983.97-.983zm4.844 0c.535 0 .969.44.969.983a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.983.97-.983z"/></svg>`,
-
-    facebook: `<svg viewBox="0 0 16 16" fill="currentColor"><path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"/></svg>`,
-
-    telegram: `<svg viewBox="0 0 16 16" fill="currentColor"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.287 5.906q-1.168.486-4.666 2.01-.567.225-.595.442c-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294q.39.01.868-.32 3.269-2.206 3.374-2.23c.05-.012.12-.026.166.016s.042.12.037.141c-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8 8 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629q.14.092.27.187c.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.4 1.4 0 0 0-.013-.315.34.34 0 0 0-.114-.217.53.53 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09"/></svg>`,
-
-    email: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>`,
-
-    phone: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z"/></svg>`,
-
-    ship: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>`,
-
-    bank: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 10h3v7H4zm6.5 0h3v7h-3zM2 19h20v3H2zm15-9h3v7h-3zm-5-8L2 6v2h20V6z"/></svg>`
+    whatsapp:`<svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/></svg>`,
+    wechat:`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.33.33 0 0 0 .167-.054l1.903-1.114a.87.87 0 0 1 .723-.098 10.16 10.16 0 0 0 2.83.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178A1.17 1.17 0 0 1 4.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178 1.17 1.17 0 0 1-1.162-1.178c0-.651.52-1.18 1.162-1.18zm5.34 2.867c-1.797-.052-3.746.512-5.28 1.786-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 3.666 4.229 6.884 4.229.826 0 1.622-.12 2.361-.336a.73.73 0 0 1 .603.082l1.587.928a.27.27 0 0 0 .139.045.246.246 0 0 0 .242-.246c0-.06-.024-.12-.04-.178l-.325-1.233a.492.492 0 0 1 .178-.554C23.028 18.48 24 16.82 24 14.98c0-3.21-2.931-5.837-7.062-6.122zM14.033 14.2c.535 0 .969.44.969.983a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.983.97-.983zm4.844 0c.535 0 .969.44.969.983a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.983.97-.983z"/></svg>`,
+    facebook:`<svg viewBox="0 0 16 16" fill="currentColor"><path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"/></svg>`,
+    telegram:`<svg viewBox="0 0 16 16" fill="currentColor"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.287 5.906q-1.168.486-4.666 2.01-.567.225-.595.442c-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294q.39.01.868-.32 3.269-2.206 3.374-2.23c.05-.012.12-.026.166.016s.042.12.037.141c-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8 8 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629q.14.092.27.187c.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.4 1.4 0 0 0-.013-.315.34.34 0 0 0-.114-.217.53.53 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09"/></svg>`,
+    email:`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>`,
+    phone:`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z"/></svg>`,
+    ship:`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>`,
+    bank:`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 10h3v7H4zm6.5 0h3v7h-3zM2 19h20v3H2zm15-9h3v7h-3zm-5-8L2 6v2h20V6z"/></svg>`
 };
+
+// ============================================================
+//  FIREBASE DB REFS
+// ============================================================
+const refUsers = db.ref('users');
+const refDeposits = db.ref('deposits');
+const refSettings = db.ref('settings');
+
+let CURRENT_USER = null;  // { username, email, password, balance, status }
 
 // ============================================================
 //  AUTH
 // ============================================================
-
-function showRegister() {
-    document.getElementById('loginPage').style.display = 'none';
-    document.getElementById('registerPage').style.display = 'flex';
-}
-function showLogin() {
-    document.getElementById('registerPage').style.display = 'none';
-    document.getElementById('loginPage').style.display = 'flex';
-}
+function showReg() { $('loginPage').style.display='none'; $('registerPage').style.display='flex'; }
+function showLog() { $('registerPage').style.display='none'; $('loginPage').style.display='flex'; }
 
 function handleLogin() {
-    const user = document.getElementById('loginUser').value.trim();
-    const pass = document.getElementById('loginPass').value.trim();
-    const errDiv = document.getElementById('loginError');
-    errDiv.style.display = 'none';
+    const user = $('loginUser').value.trim();
+    const pass = $('loginPass').value.trim();
+    $('loginError').style.display='none';
+    if(!user||!pass){ errDiv('loginError','Fill all fields.'); return; }
 
-    if (!user || !pass) { errDiv.textContent = 'Fill all fields.'; errDiv.style.display = 'block'; return; }
-
-    const u = DB.findUser(user);
-    if (!u || u.password !== pass) { errDiv.textContent = 'Invalid credentials.'; errDiv.style.display = 'block'; return; }
-    if (u.status === 'blocked') { errDiv.textContent = 'Account blocked. Contact admin.'; errDiv.style.display = 'block'; return; }
-
-    DB.setCurrent(user);
-    renderApp();
+    refUsers.child(user).once('value').then(snap=>{
+        const data = snap.val();
+        if(!data||data.password!==pass){ errDiv('loginError','Invalid credentials.'); return; }
+        if(data.status==='blocked'){ errDiv('loginError','Account blocked. Contact admin.'); return; }
+        CURRENT_USER = { username:user, ...data };
+        localStorage.setItem('vs_session', user);
+        renderApp();
+    });
 }
 
 function handleRegister() {
-    const user = document.getElementById('regUser').value.trim();
-    const email = document.getElementById('regEmail').value.trim();
-    const pass = document.getElementById('regPass').value.trim();
-    const errDiv = document.getElementById('regError');
-    errDiv.style.display = 'none';
+    const user = $('regUser').value.trim();
+    const email = $('regEmail').value.trim();
+    const pass = $('regPass').value.trim();
+    $('regError').style.display='none';
+    if(!user||!email||!pass){ errDiv('regError','Fill all fields.'); return; }
 
-    if (!user || !email || !pass) { errDiv.textContent = 'Fill all fields.'; errDiv.style.display = 'block'; return; }
-    if (DB.findUser(user)) { errDiv.textContent = 'Username taken.'; errDiv.style.display = 'block'; return; }
-
-    const users = DB.getUsers();
-    users.push({ username:user, email, password:pass, balance:0, status:'active' });
-    DB.saveUsers(users);
-    DB.setCurrent(user);
-    renderApp();
+    refUsers.child(user).once('value').then(snap=>{
+        if(snap.exists()){ errDiv('regError','Username taken.'); return; }
+        refUsers.child(user).set({ email, password:pass, balance:0, status:'active' });
+        CURRENT_USER = { username:user, email, password:pass, balance:0, status:'active' };
+        localStorage.setItem('vs_session', user);
+        renderApp();
+    });
 }
 
 function handleLogout() {
-    DB.setCurrent(null);
-    document.getElementById('appContainer').classList.remove('active');
-    document.getElementById('loginPage').style.display = 'flex';
-    document.getElementById('loginUser').value = '';
-    document.getElementById('loginPass').value = '';
+    CURRENT_USER=null;
+    localStorage.removeItem('vs_session');
+    $('appContainer').classList.remove('active');
+    $('loginPage').style.display='flex';
+    $('loginUser').value=''; $('loginPass').value='';
 }
 
 // ============================================================
 //  RENDER APP
 // ============================================================
-
 function renderApp() {
-    const curr = DB.getCurrent();
-    if (!curr) { location.reload(); return; }
-    const user = DB.findUser(curr);
-    if (!user) { handleLogout(); return; }
+    if(!CURRENT_USER){ $('loginPage').style.display='flex'; return; }
+    $('loginPage').style.display='none'; $('registerPage').style.display='none';
+    $('appContainer').classList.add('active');
+    $('displayUser').textContent=CURRENT_USER.username;
+    $('displayBal').textContent='$'+Number(CURRENT_USER.balance).toFixed(2);
 
-    document.getElementById('loginPage').style.display = 'none';
-    document.getElementById('registerPage').style.display = 'none';
-    document.getElementById('appContainer').classList.add('active');
+    // Settings / announcement
+    refSettings.once('value').then(snap=>{
+        const s = snap.val()||{};
+        const ann=$('announcementBar');
+        if(s.announcement&&s.announcement.trim()){ ann.textContent='📢 '+s.announcement; ann.classList.add('show'); }
+        else ann.classList.remove('show');
+    });
 
-    document.getElementById('displayUser').textContent = user.username;
-    document.getElementById('displayBal').textContent = '$' + user.balance.toFixed(2);
-
-    // announcement
-    const settings = DB.getSettings();
-    const annEl = document.getElementById('announcementBar');
-    if (settings.announcement && settings.announcement.trim()) {
-        annEl.textContent = '📢 ' + settings.announcement;
-        annEl.classList.add('show');
-    } else {
-        annEl.classList.remove('show');
-    }
-
-    renderFeatures(user);
+    renderFeatures();
 }
 
-function renderFeatures(user) {
-    const grids = { video:'gridVideo', spoof:'gridSpoof', service:'gridServices' };
-    const catLabels = { video:'📹 Video Calls', spoof:'🕵️ Spoofing', service:'🏢 Services' };
-
-    for (const [cat, gridId] of Object.entries(grids)) {
-        const el = document.getElementById(gridId);
-        el.innerHTML = '';
-        FEATURES.filter(f => f.cat === cat).forEach(f => {
-            const canAccess = user.balance >= f.deposit;
-            const card = document.createElement('div');
-            card.className = 'feature-card' + (canAccess ? '' : ' locked');
-            card.innerHTML = `
-                <div class="icon-wrap">${ICONS[f.icon] || ''}</div>
-                <div class="fname">${f.name}</div>
-                <div class="fdep">Requires $${f.deposit}</div>
-                ${!canAccess ? '<div class="lock-badge">🔒</div>' : ''}
-            `;
-            card.addEventListener('click', () => handleFeatureClick(f, user, canAccess));
+function renderFeatures() {
+    const bal = Number(CURRENT_USER.balance);
+    const grids={video:'gridVideo',spoof:'gridSpoof',service:'gridServices'};
+    for(const[cat,id]of Object.entries(grids)){
+        const el=$(id); el.innerHTML='';
+        FEATURES.filter(f=>f.cat===cat).forEach(f=>{
+            const ok = bal>=f.deposit;
+            const card=document.createElement('div');
+            card.className='feature-card'+(ok?'':' locked');
+            card.innerHTML=`<div class="icon-wrap">${ICONS[f.icon]||''}</div><div class="fname">${f.name}</div><div class="fdep">Requires $${f.deposit}</div>${!ok?'<div class="lock-badge">🔒</div>':''}`;
+            card.addEventListener('click',()=>handleFeature(f,ok));
             el.appendChild(card);
         });
     }
 }
 
-// ============================================================
-//  FEATURE CLICK
-// ============================================================
-
-function handleFeatureClick(feature, user, canAccess) {
-    const modal = document.getElementById('modalContent');
-    const overlay = document.getElementById('modalOverlay');
-
-    if (!canAccess) {
-        modal.innerHTML = `
+function handleFeature(feature,ok) {
+    const modal=$('modalContent');
+    const overlay=$('modalOverlay');
+    if(!ok){
+        modal.innerHTML=`
             <button class="close-btn" onclick="closeModal()">&times;</button>
             <h2>🔒 Access Required</h2>
             <p class="sub2">You need <strong>$${feature.deposit}</strong> to unlock ${feature.name}.</p>
-            <p style="color:#7a8ba3;font-size:13px;margin:12px 0;">Your balance: <strong style="color:#92fe9d;">$${user.balance.toFixed(2)}</strong></p>
-            <button class="btn-primary" onclick="closeModal();openDepositModal()">Deposit Now</button>
-            <button class="btn-secondary" style="width:100%;margin-top:8px;" onclick="closeModal()">Cancel</button>
-        `;
+            <p style="color:#7a8ba3;font-size:13px;margin:12px 0;">Your balance: <strong style="color:#92fe9d;">$${Number(CURRENT_USER.balance).toFixed(2)}</strong></p>
+            <button class="btn-primary" onclick="closeModal();openDeposit()">Deposit Now</button>
+            <button class="btn-secondary" style="width:100%;margin-top:8px" onclick="closeModal()">Cancel</button>`;
     } else {
-        // Feature "works" but returns error
-        modal.innerHTML = `
+        modal.innerHTML=`
             <button class="close-btn" onclick="closeModal()">&times;</button>
-            <div style="text-align:center;padding:20px 0;">
+            <div style="text-align:center;padding:20px 0">
                 <div style="font-size:50px;margin-bottom:12px;">⚠️</div>
                 <h2>Service Unavailable</h2>
                 <p class="sub2">We're experiencing heavy traffic. Please try again later.</p>
@@ -442,317 +326,258 @@ function handleFeatureClick(feature, user, canAccess) {
                     <span style="color:#7a8ba3;font-size:11px;">Expected resolution within 2–4 hours.</span>
                 </div>
                 <button class="btn-primary" onclick="closeModal()">OK</button>
-            </div>
-        `;
+            </div>`;
     }
     overlay.classList.add('show');
 }
 
 // ============================================================
-//  DEPOSIT MODAL
+//  DEPOSIT
 // ============================================================
-
-function openDepositModal() {
-    const overlay = document.getElementById('modalOverlay');
-    const modal = document.getElementById('modalContent');
-    const settings = DB.getSettings();
-
-    modal.innerHTML = `
-        <button class="close-btn" onclick="closeModal()">&times;</button>
-        <h2>💰 Make a Deposit</h2>
-        <p class="sub2">Minimum deposit: <strong>$${settings.minDeposit}</strong></p>
-
-        <label>Select Asset</label>
-        <select id="depositAsset">
-            <option value="btc">Bitcoin (BTC)</option>
-            <option value="usdt">USDT (TRC-20)</option>
-        </select>
-
-        <label>Amount (USD)</label>
-        <input type="number" id="depositAmount" min="${settings.minDeposit}" step="0.01" placeholder="e.g. 100" />
-
-        <div id="depositAddressBox" class="deposit-address">
-            ${settings.btcWallet}
-        </div>
-        <p style="color:#7a8ba3;font-size:11px;text-align:center;">Send exact amount to the address above.<br/>Deposits are manually approved by admin.</p>
-
-        <button class="btn-primary" onclick="submitDeposit()">Submit Deposit</button>
-    `;
-    overlay.classList.add('show');
-
-    // update address on asset change
-    document.getElementById('depositAsset').addEventListener('change', function() {
-        const s = DB.getSettings();
-        document.getElementById('depositAddressBox').textContent =
-            this.value === 'btc' ? s.btcWallet : s.usdtWallet;
+function openDeposit() {
+    const overlay=$('modalOverlay');
+    const modal=$('modalContent');
+    refSettings.once('value').then(snap=>{
+        const s = snap.val()||{minDeposit:50,btcWallet:'bc1q...',usdtWallet:'TRX...'};
+        modal.innerHTML=`
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <h2>💰 Make a Deposit</h2>
+            <p class="sub2">Minimum deposit: <strong>$${s.minDeposit}</strong></p>
+            <label>Select Asset</label>
+            <select id="depAsset">
+                <option value="btc">Bitcoin (BTC)</option>
+                <option value="usdt">USDT (TRC-20)</option>
+            </select>
+            <label>Amount (USD)</label>
+            <input type="number" id="depAmount" min="${s.minDeposit}" step="0.01" placeholder="e.g. 100" />
+            <label>Send to Address (tap to copy)</label>
+            <div id="depAddrBox" class="deposit-address" onclick="copyAddress()">${s.btcWallet}</div>
+            <p style="color:#7a8ba3;font-size:11px;text-align:center;">Send exact amount. Deposits manually approved.</p>
+            <button class="btn-primary" onclick="submitDeposit()">Submit Deposit</button>`;
+        overlay.classList.add('show');
+        $('depAsset').addEventListener('change',function(){
+            const addr=$('depAddrBox');
+            const val = this.value==='btc' ? (s.btcWallet||'bc1q...') : (s.usdtWallet||'TRX...');
+            addr.textContent=val; addr.classList.remove('copied');
+        });
     });
+}
+
+function copyAddress() {
+    const addr=$('depAddrBox');
+    const text = addr.textContent;
+    if(navigator.clipboard){
+        navigator.clipboard.writeText(text).then(()=>{
+            addr.classList.add('copied');
+            addr.textContent='✅ Copied! '+text;
+            setTimeout(()=>{ addr.textContent=text; addr.classList.remove('copied'); },2000);
+        });
+    } else {
+        // fallback
+        const ta = document.createElement('textarea');
+        ta.value=text; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+        addr.classList.add('copied'); addr.textContent='✅ Copied! '+text;
+        setTimeout(()=>{ addr.textContent=text; addr.classList.remove('copied'); },2000);
+    }
 }
 
 function submitDeposit() {
-    const asset = document.getElementById('depositAsset').value;
-    const amount = parseFloat(document.getElementById('depositAmount').value);
-    const settings = DB.getSettings();
-    const curr = DB.getCurrent();
-    if (!curr) return;
+    const asset = $('depAsset').value;
+    const amount = parseFloat($('depAmount').value);
+    if(!amount||amount<0){ showToast('Enter a valid amount.'); return; }
 
-    if (!amount || amount < settings.minDeposit) {
-        showToast('Minimum deposit is $' + settings.minDeposit);
-        return;
-    }
-
-    const deps = DB.getDeposits();
-    deps.push({
-        id: Date.now(),
-        username: curr,
-        asset: asset === 'btc' ? 'BTC' : 'USDT (TRC-20)',
-        amount: amount,
-        status: 'pending',
-        date: new Date().toISOString()
+    refSettings.once('value').then(snap=>{
+        const s = snap.val()||{minDeposit:50};
+        if(amount<s.minDeposit){ showToast('Minimum deposit is $'+s.minDeposit); return; }
+        const depId = Date.now().toString();
+        refDeposits.child(depId).set({
+            id: depId,
+            username: CURRENT_USER.username,
+            asset: asset==='btc'?'BTC':'USDT (TRC-20)',
+            amount: amount,
+            status: 'pending',
+            date: new Date().toISOString()
+        });
+        showToast('Deposit submitted for approval.');
+        closeModal();
     });
-    DB.saveDeposits(deps);
-
-    showToast('Deposit submitted for approval. Wait for admin confirmation.');
-    closeModal();
 }
 
 // ============================================================
-//  MODAL HELPERS
+//  ADMIN — long press (3s) on logo
 // ============================================================
-
-function closeModal() {
-    document.getElementById('modalOverlay').classList.remove('show');
-}
-
-// close on backdrop click
-document.getElementById('modalOverlay').addEventListener('click', function(e) {
-    if (e.target === this) closeModal();
+let pressTimer = null;
+$('logoEl').addEventListener('mousedown', function(e){
+    pressTimer = setTimeout(() => {
+        pressTimer = null;
+        openAdmin();
+    }, 2000); // 2 second hold
 });
+$('logoEl').addEventListener('mouseup', function(){ if(pressTimer){ clearTimeout(pressTimer); pressTimer=null; } });
+$('logoEl').addEventListener('mouseleave', function(){ if(pressTimer){ clearTimeout(pressTimer); pressTimer=null; } });
+// touch support
+$('logoEl').addEventListener('touchstart', function(e){
+    pressTimer = setTimeout(() => {
+        pressTimer = null;
+        openAdmin();
+    }, 2000);
+});
+$('logoEl').addEventListener('touchend', function(){ if(pressTimer){ clearTimeout(pressTimer); pressTimer=null; } });
+$('logoEl').addEventListener('touchmove', function(){ if(pressTimer){ clearTimeout(pressTimer); pressTimer=null; } });
 
-function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3500);
-}
-
-// ============================================================
-//  ADMIN — accessible via URL hash #admin
-// ============================================================
+// Also console shortcut
+// Just type: openAdmin()
 
 function openAdmin() {
-    const overlay = document.getElementById('modalOverlay');
-    const modal = document.getElementById('modalContent');
-    const users = DB.getUsers();
-    const deps = DB.getDeposits();
-    const settings = DB.getSettings();
+    const overlay=$('modalOverlay');
+    const modal=$('modalContent');
 
-    let userRows = users.map(u => `
-        <tr>
-            <td>${u.username}</td>
-            <td>$${u.balance.toFixed(2)}</td>
-            <td>${u.status}</td>
-            <td>
-                <button class="btn-sm green" onclick="adminCredit('${u.username}')">Credit</button>
-                <button class="btn-sm red" onclick="adminDeleteUser('${u.username}')">Delete</button>
-                <button class="btn-sm blue" onclick="adminToggleStatus('${u.username}')">${u.status === 'active' ? 'Block' : 'Unblock'}</button>
-            </td>
-        </tr>
-    `).join('');
+    Promise.all([
+        refUsers.once('value'),
+        refDeposits.once('value'),
+        refSettings.once('value')
+    ]).then(([uSnap,dSnap,sSnap])=>{
+        const users = uSnap.val()||{};
+        const deps = dSnap.val()||{};
+        const settings = sSnap.val()||{minDeposit:50,announcement:'',btcWallet:'',usdtWallet:''};
 
-    let depRows = deps.slice().reverse().map(d => `
-        <div class="deposit-item">
-            <span><strong>${d.username}</strong> — $${d.amount} (${d.asset})</span>
-            <span>
-                <span class="status ${d.status}">${d.status}</span>
-                ${d.status === 'pending' ? `
-                    <button class="btn-sm green" onclick="adminApproveDep(${d.id})">✓</button>
-                    <button class="btn-sm red" onclick="adminRejectDep(${d.id})">✗</button>
-                ` : ''}
-            </span>
-        </div>
-    `).join('') || '<p style="color:#7a8ba3;font-size:13px;">No deposits yet.</p>';
+        let userRows = Object.entries(users).map(([uname,udata])=>`
+            <tr>
+                <td>${uname}</td>
+                <td>${udata.balance.toFixed(2)}</td>
+                <td>${udata.status||'active'}</td>
+                <td>
+                    <button class="btn-sm green" onclick="adminCredit('${uname}')">Credit</button>
+                    <button class="btn-sm red" onclick="adminDelete('${uname}')">Del</button>
+                    <button class="btn-sm blue" onclick="adminToggle('${uname}')">${(udata.status||'active')==='active'?'Block':'Unblock'}</button>
+                </td>
+            </tr>`).join('');
 
-    modal.innerHTML = `
-        <button class="close-btn" onclick="closeModal()">&times;</button>
-        <h2>⚙️ Admin Panel</h2>
-        <p class="sub2">Manage users, deposits, and settings</p>
+        let depList = Object.values(deps).sort((a,b)=>b.id-a.id);
+        let depRows = depList.map(d=>`
+            <div class="deposit-item">
+                <span><strong>${d.username}</strong> — $${d.amount} (${d.asset})</span>
+                <span>
+                    <span class="status ${d.status}">${d.status}</span>
+                    ${d.status==='pending'?`
+                        <button class="btn-sm green" onclick="adminApprove('${d.id}')">✓</button>
+                        <button class="btn-sm red" onclick="adminReject('${d.id}')">✗</button>`:''}
+                </span>
+            </div>`).join('')||'<p style="color:#7a8ba3;font-size:13px;">No deposits.</p>';
 
-        <div class="tabs">
-            <button class="active" onclick="adminTab(this,'users')">Users</button>
-            <button onclick="adminTab(this,'deposits')">Deposits</button>
-            <button onclick="adminTab(this,'settings')">Settings</button>
-        </div>
-
-        <!-- Users Tab -->
-        <div id="adminUsers">
-            <table class="admin-table">
-                <thead><tr><th>User</th><th>Balance</th><th>Status</th><th>Actions</th></tr></thead>
-                <tbody>${userRows}</tbody>
-            </table>
-        </div>
-
-        <!-- Deposits Tab -->
-        <div id="adminDeposits" style="display:none;">
-            <div style="background:#0f1620;border-radius:10px;padding:12px;">${depRows}</div>
-        </div>
-
-        <!-- Settings Tab -->
-        <div id="adminSettings" style="display:none;">
-            <label>Min Deposit ($)</label>
-            <input type="number" id="admMinDep" value="${settings.minDeposit}" step="0.01" />
-
-            <label>BTC Wallet Address</label>
-            <input type="text" id="admBtc" value="${settings.btcWallet}" />
-
-            <label>USDT (TRC-20) Wallet Address</label>
-            <input type="text" id="admUsdt" value="${settings.usdtWallet}" />
-
-            <label>Announcement</label>
-            <textarea id="admAnn" rows="3" style="resize:vertical;">${settings.announcement || ''}</textarea>
-
-            <button class="btn-primary" onclick="adminSaveSettings()">Save Settings</button>
-        </div>
-    `;
-    overlay.classList.add('show');
-}
-
-function adminTab(btn, tab) {
-    document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    ['adminUsers','adminDeposits','adminSettings'].forEach(id => {
-        document.getElementById(id).style.display = id === 'admin'+tab.charAt(0).toUpperCase()+tab.slice(1) ? 'block' : 'none';
+        modal.innerHTML=`
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <h2>⚙️ Admin Panel</h2>
+            <p class="sub2">Manage users, deposits, and settings</p>
+            <div class="tabs">
+                <button class="active" onclick="admTab(this,'users')">Users</button>
+                <button onclick="admTab(this,'deposits')">Deposits</button>
+                <button onclick="admTab(this,'settings')">Settings</button>
+            </div>
+            <div id="admUsers"><table class="admin-table"><thead><tr><th>User</th><th>Bal</th><th>Status</th><th>Actions</th></tr></thead><tbody>${userRows}</tbody></table></div>
+            <div id="admDeposits" style="display:none"><div style="background:#0f1620;border-radius:10px;padding:12px;">${depRows}</div></div>
+            <div id="admSettings" style="display:none">
+                <label>Min Deposit ($)</label>
+                <input type="number" id="admMinDep" value="${settings.minDeposit||50}" step="0.01" />
+                <label>BTC Wallet</label>
+                <input type="text" id="admBtc" value="${settings.btcWallet||''}" />
+                <label>USDT (TRC-20) Wallet</label>
+                <input type="text" id="admUsdt" value="${settings.usdtWallet||''}" />
+                <label>Announcement</label>
+                <textarea id="admAnn" rows="3" style="resize:vertical">${settings.announcement||''}</textarea>
+                <button class="btn-primary" onclick="admSaveSettings()">Save Settings</button>
+            </div>`;
+        overlay.classList.add('show');
     });
 }
 
-function adminCredit(username) {
+function admTab(btn,tab){
+    document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    ['admUsers','admDeposits','admSettings'].forEach(id=>{
+        $(id).style.display=id==='adm'+tab.charAt(0).toUpperCase()+tab.slice(1)?'block':'none';
+    });
+}
+
+function adminCredit(uname){
     const amt = prompt('Credit amount ($):');
-    if (!amt || isNaN(amt) || parseFloat(amt) <= 0) return;
-    const users = DB.getUsers();
-    const u = users.find(x => x.username === username);
-    if (!u) return;
-    u.balance += parseFloat(amt);
-    DB.saveUsers(users);
-    showToast(`Credited $${amt} to ${username}`);
-    adminRefresh();
+    if(!amt||isNaN(amt)||parseFloat(amt)<=0)return;
+    refUsers.child(uname+'/balance').once('value').then(s=>{
+        const cur = s.val()||0;
+        refUsers.child(uname+'/balance').set(cur+parseFloat(amt));
+        showToast(`Credited $${amt} to ${uname}`);
+        setTimeout(openAdmin,300);
+    });
 }
 
-function adminDeleteUser(username) {
-    if (!confirm(`Delete user "${username}"? This cannot be undone.`)) return;
-    let users = DB.getUsers().filter(x => x.username !== username);
-    DB.saveUsers(users);
-    showToast(`Deleted ${username}`);
-    adminRefresh();
+function adminDelete(uname){
+    if(!confirm(`Delete "${uname}"?`))return;
+    refUsers.child(uname).remove();
+    showToast(`Deleted ${uname}`);
+    setTimeout(openAdmin,300);
 }
 
-function adminToggleStatus(username) {
-    const users = DB.getUsers();
-    const u = users.find(x => x.username === username);
-    if (!u) return;
-    u.status = u.status === 'active' ? 'blocked' : 'active';
-    DB.saveUsers(users);
-    showToast(`${username} is now ${u.status}`);
-    adminRefresh();
+function adminToggle(uname){
+    refUsers.child(uname+'/status').once('value').then(s=>{
+        const cur = s.val()||'active';
+        refUsers.child(uname+'/status').set(cur==='active'?'blocked':'active');
+        showToast(`${uname} toggled`);
+        setTimeout(openAdmin,300);
+    });
 }
 
-function adminApproveDep(id) {
-    const deps = DB.getDeposits();
-    const dep = deps.find(d => d.id === id);
-    if (!dep || dep.status !== 'pending') return;
-
-    // credit user
-    const users = DB.getUsers();
-    const u = users.find(x => x.username === dep.username);
-    if (u) u.balance += dep.amount;
-    DB.saveUsers(users);
-
-    dep.status = 'approved';
-    DB.saveDeposits(deps);
-    showToast(`Deposit $${dep.amount} approved for ${dep.username}`);
-    adminRefresh();
+function adminApprove(depId){
+    refDeposits.child(depId).once('value').then(s=>{
+        const d = s.val();
+        if(!d||d.status!=='pending')return;
+        refUsers.child(d.username+'/balance').once('value').then(bSnap=>{
+            const cur = bSnap.val()||0;
+            refUsers.child(d.username+'/balance').set(cur+d.amount);
+            refDeposits.child(depId+'/status').set('approved');
+            showToast(`Approved $${d.amount} for ${d.username}`);
+            setTimeout(openAdmin,300);
+        });
+    });
 }
 
-function adminRejectDep(id) {
-    const deps = DB.getDeposits();
-    const dep = deps.find(d => d.id === id);
-    if (!dep || dep.status !== 'pending') return;
-    dep.status = 'rejected';
-    DB.saveDeposits(deps);
-    showToast(`Deposit rejected`);
-    adminRefresh();
+function adminReject(depId){
+    refDeposits.child(depId+'/status').set('rejected');
+    showToast('Deposit rejected');
+    setTimeout(openAdmin,300);
 }
 
-function adminSaveSettings() {
-    const minDep = parseFloat(document.getElementById('admMinDep').value);
-    const btc = document.getElementById('admBtc').value.trim();
-    const usdt = document.getElementById('admUsdt').value.trim();
-    const ann = document.getElementById('admAnn').value.trim();
-
-    if (!minDep || minDep <= 0) { showToast('Invalid min deposit'); return; }
-    if (!btc) { showToast('Enter BTC wallet'); return; }
-    if (!usdt) { showToast('Enter USDT wallet'); return; }
-
-    DB.saveSettings({ minDeposit:minDep, announcement:ann, btcWallet:btc, usdtWallet:usdt });
+function admSaveSettings(){
+    const minDep = parseFloat($('admMinDep').value);
+    const btc = $('admBtc').value.trim();
+    const usdt = $('admUsdt').value.trim();
+    const ann = $('admAnn').value.trim();
+    if(!minDep||minDep<=0){showToast('Invalid min deposit');return;}
+    refSettings.set({minDeposit:minDep,btcWallet:btc,usdtWallet:usdt,announcement:ann});
     showToast('Settings saved');
     closeModal();
-    const curr = DB.getCurrent();
-    if (curr) renderApp();
-}
-
-function adminRefresh() {
-    closeModal();
-    setTimeout(openAdmin, 100);
+    if(CURRENT_USER)renderApp();
 }
 
 // ============================================================
-//  ADMIN ACCESS — double-click on logo
+//  BOOT — check session
 // ============================================================
-
-let logoClickCount = 0;
-document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('logo') || (e.target.parentElement && e.target.parentElement.classList.contains('logo'))) {
-        logoClickCount++;
-        if (logoClickCount >= 5) {
-            logoClickCount = 0;
-            openAdmin();
-        }
-        setTimeout(() => { logoClickCount = 0; }, 2000);
-    }
-});
-
-// ============================================================
-//  BOOT — persist default users & check session
-// ============================================================
-
-// Seed default admin user & demo users if empty
-(function boot() {
-    let users = DB.getUsers();
-    if (users.length === 0) {
-        users.push(
-            { username:'admin',   email:'admin@vertexswap.io', password:'admin123', balance:99999, status:'active' },
-            { username:'demo',    email:'demo@example.com',    password:'demo123',  balance:0,     status:'active' },
-            { username:'testusr', email:'test@example.com',    password:'test123',  balance:20,    status:'active' }
-        );
-        DB.saveUsers(users);
-    }
-    // Seed default settings if missing
-    if (!localStorage.getItem('vs_settings')) {
-        DB.saveSettings({
-            minDeposit:50,
-            announcement:'',
-            btcWallet:'bc1qx5p6s9h4z3t2w7y8k0m1n4j2r8v6d3f9e0a2c',
-            usdtWallet:'TRX7aL9bC4dE5fG6hI7jK8lM9nO0pQ1rS2tU3vW'
+(function boot(){
+    const session = localStorage.getItem('vs_session');
+    if(session){
+        refUsers.child(session).once('value').then(snap=>{
+            const data = snap.val();
+            if(data&&data.status!=='blocked'){
+                CURRENT_USER = { username:session, ...data };
+                renderApp();
+            } else {
+                localStorage.removeItem('vs_session');
+                $('loginPage').style.display='flex';
+            }
         });
+    } else {
+        $('loginPage').style.display='flex';
     }
-
-    // Auto-login if session exists
-    const curr = DB.getCurrent();
-    if (curr) {
-        const u = DB.findUser(curr);
-        if (u && u.status === 'active') { renderApp(); return; }
-        DB.setCurrent(null);
-    }
-
-    document.getElementById('loginPage').style.display = 'flex';
 })();
 </script>
 </body>
