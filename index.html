@@ -354,7 +354,7 @@ function openDeposit() {
             <input type="number" id="depAmount" min="${s.minDeposit}" step="0.01" placeholder="e.g. 100" />
             <label>Send to Address (tap to copy)</label>
             <div id="depAddrBox" class="deposit-address" onclick="copyAddress()">${s.btcWallet}</div>
-            <p style="color:#7a8ba3;font-size:11px;text-align:center;">Send exact amount. Deposits manually approved.</p>
+            <p style="color:#7a8ba3;font-size:11px;text-align:center;">Send exact amount.</p>
             <button class="btn-primary" onclick="submitDeposit()">Submit Deposit</button>`;
         $('modalOverlay').classList.add('show');
         setTimeout(()=>{
