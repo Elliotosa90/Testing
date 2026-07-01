@@ -1,164 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>VertexSwap Pro</title>
-    <style>
-        *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
-        body{background:#0b0e14;color:#e8edf5;min-height:100vh;display:flex;flex-direction:column}
-
-        /* --- Auth --- */
-        .auth-page{display:flex;align-items:center;justify-content:center;min-height:100vh;background:radial-gradient(ellipse at center,#141b26 0%,#0b0e14 70%);padding:20px}
-        .auth-card{background:#151e2a;border-radius:18px;padding:40px 36px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.6);border:1px solid #253040}
-        .auth-card h1{font-size:26px;margin-bottom:4px;background:linear-gradient(135deg,#00c9ff,#92fe9d);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-        .auth-card p.sub{color:#7a8ba3;margin-bottom:28px;font-size:14px}
-        .auth-card label{display:block;font-size:13px;color:#9aabc1;margin-bottom:5px}
-        .auth-card input{width:100%;padding:12px 14px;background:#0f1620;border:1px solid #253040;border-radius:10px;color:#fff;font-size:14px;margin-bottom:16px;transition:.2s}
-        .auth-card input:focus{outline:none;border-color:#00c9ff;box-shadow:0 0 0 3px rgba(0,201,255,.15)}
-        .auth-card button{width:100%;padding:13px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;background:linear-gradient(135deg,#00c9ff,#92fe9d);color:#0b0e14;transition:.3s}
-        .auth-card button:hover{transform:translateY(-1px);box-shadow:0 8px 25px rgba(0,201,255,.3)}
-        .auth-card .alt-link{text-align:center;margin-top:18px;font-size:13px;color:#7a8ba3}
-        .auth-card .alt-link a{color:#00c9ff;text-decoration:none;cursor:pointer}
-        .auth-card .alt-link a:hover{text-decoration:underline}
-        .auth-error{background:#2d1414;color:#ff6b6b;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;display:none;border:1px solid #4a1c1c}
-
-        /* --- App --- */
-        .app-container{display:none;flex-direction:column;min-height:100vh}
-        .app-container.active{display:flex}
-        .topbar{background:#111924;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1f2b3a;position:sticky;top:0;z-index:100}
-        .topbar .logo{font-size:20px;font-weight:700;background:linear-gradient(135deg,#00c9ff,#92fe9d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;cursor:pointer;user-select:none}
-        .topbar .user-info{display:flex;align-items:center;gap:14px}
-        .topbar .user-info span{color:#9aabc1;font-size:13px}
-        .topbar .user-info .bal{color:#92fe9d;font-weight:600}
-        .topbar .logout-btn{background:#253040;border:none;color:#e8edf5;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:13px}
-        .topbar .logout-btn:hover{background:#314257}
-        .announcement{background:#1a2533;margin:16px 24px 0;padding:12px 18px;border-radius:10px;border-left:4px solid #ffc107;font-size:13px;color:#ffd966;display:none}
-        .announcement.show{display:block}
-        .main{flex:1;padding:20px 24px 80px;max-width:1100px;width:100%;margin:0 auto}
-        .section-title{font-size:18px;font-weight:600;margin:28px 0 14px;color:#c8d6e5;display:flex;align-items:center;gap:8px}
-        .section-title:first-of-type{margin-top:8px}
-        .section-title small{font-weight:400;font-size:12px;color:#7a8ba3}
-        .feature-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
-        .feature-card{background:#151e2a;border:1px solid #1f2b3a;border-radius:14px;padding:18px 12px 14px;text-align:center;cursor:pointer;transition:.25s;position:relative}
-        .feature-card:hover{border-color:#3a5068;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
-        .feature-card.locked{opacity:.55;cursor:not-allowed}
-        .feature-card.locked:hover{transform:none;border-color:#1f2b3a;box-shadow:none}
-        .feature-card .icon-wrap{height:44px;display:flex;align-items:center;justify-content:center;margin-bottom:8px}
-        .feature-card .icon-wrap svg{width:36px;height:36px;fill:#92fe9d}
-        .feature-card .fname{font-size:13px;font-weight:500;color:#e8edf5}
-        .feature-card .fdep{font-size:11px;color:#7a8ba3;margin-top:4px}
-        .feature-card .lock-badge{position:absolute;top:8px;right:10px;font-size:12px;color:#ff6b6b}
-
-        /* --- Modal --- */
-        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:999;align-items:center;justify-content:center;padding:20px}
-        .modal-overlay.show{display:flex}
-        .modal{background:#151e2a;border-radius:16px;width:100%;max-width:480px;padding:30px 28px;border:1px solid #253040;box-shadow:0 25px 70px rgba(0,0,0,.7);max-height:90vh;overflow-y:auto}
-        .modal h2{font-size:20px;margin-bottom:4px}
-        .modal p.sub2{color:#7a8ba3;font-size:13px;margin-bottom:18px}
-        .modal label{display:block;font-size:13px;color:#9aabc1;margin-bottom:5px;margin-top:14px}
-        .modal input,.modal select,.modal textarea{width:100%;padding:11px 14px;background:#0f1620;border:1px solid #253040;border-radius:10px;color:#fff;font-size:14px;margin-bottom:6px}
-        .modal select{appearance:auto}
-        .modal input:focus,.modal select:focus{outline:none;border-color:#00c9ff}
-        .modal .btn-primary{width:100%;padding:13px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;background:linear-gradient(135deg,#00c9ff,#92fe9d);color:#0b0e14;margin-top:18px}
-        .modal .btn-primary:hover{box-shadow:0 8px 25px rgba(0,201,255,.3)}
-        .modal .btn-danger{background:#2d1414;color:#ff6b6b;border:1px solid #4a1c1c}
-        .modal .btn-secondary{background:#253040;color:#e8edf5;border:1px solid #314257}
-        .modal .close-btn{float:right;background:none;border:none;color:#7a8ba3;font-size:22px;cursor:pointer;line-height:1}
-        .deposit-address{background:#0f1620;padding:12px;border-radius:8px;text-align:center;font-size:13px;color:#92fe9d;word-break:break-all;margin:10px 0;cursor:pointer;border:1px dashed #253040;transition:.2s}
-        .deposit-address:hover{border-color:#00c9ff;background:#1a2533}
-        .deposit-address.copied{border-color:#92fe9d;color:#92fe9d}
-        .payment-methods{display:flex;gap:10px;margin:10px 0}
-        .payment-methods button{flex:1;padding:10px;border:1px solid #253040;border-radius:8px;background:#0f1620;color:#e8edf5;cursor:pointer;font-size:13px;transition:.2s}
-        .payment-methods button.active{border-color:#00c9ff;background:#1a2a3a}
-        .admin-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
-        .admin-table th{text-align:left;padding:10px 8px;color:#7a8ba3;border-bottom:1px solid #1f2b3a;font-weight:500}
-        .admin-table td{padding:10px 8px;border-bottom:1px solid #19222f}
-        .admin-table .btn-sm{padding:5px 12px;border:none;border-radius:6px;cursor:pointer;font-size:12px}
-        .admin-table .btn-sm.green{background:#1a3a2a;color:#92fe9d}
-        .admin-table .btn-sm.red{background:#3a1a1a;color:#ff6b6b}
-        .admin-table .btn-sm.blue{background:#1a2a3a;color:#66b0ff}
-        .tabs{display:flex;gap:4px;margin-bottom:16px;background:#0f1620;border-radius:10px;padding:4px}
-        .tabs button{flex:1;padding:9px;background:transparent;border:none;color:#7a8ba3;cursor:pointer;border-radius:8px;font-size:13px}
-        .tabs button.active{background:#253040;color:#e8edf5}
-        .toast{position:fixed;bottom:30px;right:30px;background:#1a2a3a;border:1px solid #253040;border-radius:10px;padding:14px 20px;color:#e8edf5;font-size:13px;z-index:2000;display:none;box-shadow:0 10px 40px rgba(0,0,0,.5)}
-        .toast.show{display:block;animation:slideIn .3s ease}
-        @keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-        .hidden{display:none!important}
-        .deposit-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #19222f;font-size:13px;align-items:center}
-        .deposit-item .status{padding:3px 10px;border-radius:20px;font-size:11px}
-        .status.pending{background:#2a2a1a;color:#ffc107}
-        .status.approved{background:#1a3a2a;color:#92fe9d}
-        .status.rejected{background:#3a1a1a;color:#ff6b6b}
-        @media(max-width:600px){.feature-grid{grid-template-columns:repeat(2,1fr)}.topbar{padding:12px 14px;flex-wrap:wrap;gap:8px}.main{padding:14px 14px 60px}.modal{padding:20px 16px}}
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VertexSwap Pro</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+body{background:#0b0e14;color:#e8edf5;min-height:100vh;display:flex;flex-direction:column}
+.auth-page{display:flex;align-items:center;justify-content:center;min-height:100vh;background:radial-gradient(ellipse at center,#141b26 0%,#0b0e14 70%);padding:20px}
+.auth-card{background:#151e2a;border-radius:18px;padding:40px 36px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.6);border:1px solid #253040}
+.auth-card h1{font-size:26px;margin-bottom:4px;background:linear-gradient(135deg,#00c9ff,#92fe9d);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.auth-card p.sub{color:#7a8ba3;margin-bottom:28px;font-size:14px}
+.auth-card label{display:block;font-size:13px;color:#9aabc1;margin-bottom:5px}
+.auth-card input{width:100%;padding:12px 14px;background:#0f1620;border:1px solid #253040;border-radius:10px;color:#fff;font-size:14px;margin-bottom:16px;transition:.2s}
+.auth-card input:focus{outline:none;border-color:#00c9ff;box-shadow:0 0 0 3px rgba(0,201,255,.15)}
+.auth-card button{width:100%;padding:13px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;background:linear-gradient(135deg,#00c9ff,#92fe9d);color:#0b0e14;transition:.3s}
+.auth-card button:hover{transform:translateY(-1px);box-shadow:0 8px 25px rgba(0,201,255,.3)}
+.auth-card .alt-link{text-align:center;margin-top:18px;font-size:13px;color:#7a8ba3}
+.auth-card .alt-link a{color:#00c9ff;text-decoration:none;cursor:pointer}
+.auth-card .alt-link a:hover{text-decoration:underline}
+.auth-error{background:#2d1414;color:#ff6b6b;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;display:none;border:1px solid #4a1c1c}
+.app-container{display:none;flex-direction:column;min-height:100vh}
+.app-container.active{display:flex}
+.topbar{background:#111924;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1f2b3a;position:sticky;top:0;z-index:100}
+.topbar .logo{font-size:20px;font-weight:700;background:linear-gradient(135deg,#00c9ff,#92fe9d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;cursor:pointer;user-select:none}
+.topbar .user-info{display:flex;align-items:center;gap:14px}
+.topbar .user-info span{color:#9aabc1;font-size:13px}
+.topbar .user-info .bal{color:#92fe9d;font-weight:600}
+.topbar .logout-btn{background:#253040;border:none;color:#e8edf5;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:13px}
+.topbar .logout-btn:hover{background:#314257}
+.announcement{background:#1a2533;margin:16px 24px 0;padding:12px 18px;border-radius:10px;border-left:4px solid #ffc107;font-size:13px;color:#ffd966;display:none}
+.announcement.show{display:block}
+.main{flex:1;padding:20px 24px 80px;max-width:1100px;width:100%;margin:0 auto}
+.section-title{font-size:18px;font-weight:600;margin:28px 0 14px;color:#c8d6e5;display:flex;align-items:center;gap:8px}
+.section-title:first-of-type{margin-top:8px}
+.section-title small{font-weight:400;font-size:12px;color:#7a8ba3}
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}
+.feature-card{background:#151e2a;border:1px solid #1f2b3a;border-radius:14px;padding:18px 12px 14px;text-align:center;cursor:pointer;transition:.25s;position:relative}
+.feature-card:hover{border-color:#3a5068;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.feature-card.locked{opacity:.55;cursor:not-allowed}
+.feature-card.locked:hover{transform:none;border-color:#1f2b3a;box-shadow:none}
+.feature-card .icon-wrap{height:44px;display:flex;align-items:center;justify-content:center;margin-bottom:8px}
+.feature-card .icon-wrap svg{width:36px;height:36px;fill:#92fe9d}
+.feature-card .fname{font-size:13px;font-weight:500;color:#e8edf5}
+.feature-card .fdep{font-size:11px;color:#7a8ba3;margin-top:4px}
+.feature-card .lock-badge{position:absolute;top:8px;right:10px;font-size:14px;color:#ff6b6b}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:999;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:#151e2a;border-radius:16px;width:100%;max-width:520px;padding:30px 28px;border:1px solid #253040;box-shadow:0 25px 70px rgba(0,0,0,.7);max-height:90vh;overflow-y:auto}
+.modal h2{font-size:20px;margin-bottom:4px}
+.modal p.sub2{color:#7a8ba3;font-size:13px;margin-bottom:18px}
+.modal label{display:block;font-size:13px;color:#9aabc1;margin-bottom:5px;margin-top:14px}
+.modal input,.modal select,.modal textarea{width:100%;padding:11px 14px;background:#0f1620;border:1px solid #253040;border-radius:10px;color:#fff;font-size:14px;margin-bottom:6px}
+.modal select{appearance:auto}
+.modal input:focus,.modal select:focus{outline:none;border-color:#00c9ff}
+.modal .btn-primary{width:100%;padding:13px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;background:linear-gradient(135deg,#00c9ff,#92fe9d);color:#0b0e14;margin-top:18px}
+.modal .btn-primary:hover{box-shadow:0 8px 25px rgba(0,201,255,.3)}
+.modal .btn-danger{background:#2d1414;color:#ff6b6b;border:1px solid #4a1c1c}
+.modal .btn-secondary{background:#253040;color:#e8edf5;border:1px solid #314257}
+.modal .close-btn{float:right;background:none;border:none;color:#7a8ba3;font-size:22px;cursor:pointer;line-height:1}
+.deposit-address{background:#0f1620;padding:12px;border-radius:8px;text-align:center;font-size:13px;color:#92fe9d;word-break:break-all;margin:10px 0;cursor:pointer;border:1px dashed #253040;transition:.2s}
+.deposit-address:hover{border-color:#00c9ff;background:#1a2533}
+.deposit-address.copied{border-color:#92fe9d}
+.admin-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+.admin-table th{text-align:left;padding:10px 8px;color:#7a8ba3;border-bottom:1px solid #1f2b3a;font-weight:500}
+.admin-table td{padding:10px 8px;border-bottom:1px solid #19222f}
+.admin-table .btn-sm{padding:5px 12px;border:none;border-radius:6px;cursor:pointer;font-size:12px}
+.admin-table .btn-sm.green{background:#1a3a2a;color:#92fe9d}
+.admin-table .btn-sm.red{background:#3a1a1a;color:#ff6b6b}
+.admin-table .btn-sm.blue{background:#1a2a3a;color:#66b0ff}
+.admin-table .btn-sm.orange{background:#3a2a1a;color:#ffc107}
+.tabs{display:flex;gap:4px;margin-bottom:16px;background:#0f1620;border-radius:10px;padding:4px}
+.tabs button{flex:1;padding:9px;background:transparent;border:none;color:#7a8ba3;cursor:pointer;border-radius:8px;font-size:13px}
+.tabs button.active{background:#253040;color:#e8edf5}
+.toast{position:fixed;bottom:30px;right:30px;background:#1a2a3a;border:1px solid #253040;border-radius:10px;padding:14px 20px;color:#e8edf5;font-size:13px;z-index:2000;display:none;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.toast.show{display:block;animation:slideIn .3s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.deposit-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #19222f;font-size:13px;align-items:center}
+.deposit-item .status{padding:3px 10px;border-radius:20px;font-size:11px}
+.status.pending{background:#2a2a1a;color:#ffc107}
+.status.approved{background:#1a3a2a;color:#92fe9d}
+.status.rejected{background:#3a1a1a;color:#ff6b6b}
+.pricing-grid{display:grid;gap:10px}
+.pricing-item{display:flex;align-items:center;gap:12px;background:#0f1620;padding:10px 12px;border-radius:8px}
+.pricing-item label{flex:1;margin:0;font-size:13px;color:#c8d6e5}
+.pricing-item input{width:100px;padding:8px 10px;background:#151e2a;border:1px solid #253040;border-radius:6px;color:#fff;font-size:13px;text-align:center}
+.pricing-item input:focus{outline:none;border-color:#00c9ff}
+@media(max-width:600px){.feature-grid{grid-template-columns:repeat(2,1fr)}.topbar{padding:12px 14px;flex-wrap:wrap;gap:8px}.main{padding:14px 14px 60px}.modal{padding:20px 16px}.pricing-item{flex-wrap:wrap}}
+</style>
 </head>
 <body>
 
-<!-- ===== LOGIN ===== -->
 <div id="loginPage" class="auth-page">
-    <div class="auth-card">
-        <h1>VertexSwap</h1>
-        <p class="sub">Sign in to your account</p>
-        <div id="loginError" class="auth-error"></div>
-        <label>Username</label>
-        <input type="text" id="loginUser" placeholder="Enter username" />
-        <label>Password</label>
-        <input type="password" id="loginPass" placeholder="Enter password" />
-        <button onclick="handleLogin()">Sign In</button>
-        <div class="alt-link">Don't have an account? <a onclick="showReg()">Register</a></div>
-    </div>
+<div class="auth-card">
+<h1>VertexSwap</h1>
+<p class="sub">Sign in to your account</p>
+<div id="loginError" class="auth-error"></div>
+<label>Username</label>
+<input type="text" id="loginUser" placeholder="Enter username" />
+<label>Password</label>
+<input type="password" id="loginPass" placeholder="Enter password" />
+<button onclick="handleLogin()">Sign In</button>
+<div class="alt-link">Don't have an account? <a onclick="showReg()">Register</a></div>
+</div>
 </div>
 
-<!-- ===== REGISTER ===== -->
 <div id="registerPage" class="auth-page" style="display:none">
-    <div class="auth-card">
-        <h1>Create Account</h1>
-        <p class="sub">Join VertexSwap today</p>
-        <div id="regError" class="auth-error"></div>
-        <label>Username</label>
-        <input type="text" id="regUser" placeholder="Choose a username" />
-        <label>Email</label>
-        <input type="email" id="regEmail" placeholder="your@email.com" />
-        <label>Password</label>
-        <input type="password" id="regPass" placeholder="Create password" />
-        <button onclick="handleRegister()">Register</button>
-        <div class="alt-link">Already registered? <a onclick="showLog()">Sign in</a></div>
-    </div>
+<div class="auth-card">
+<h1>Create Account</h1>
+<p class="sub">Join VertexSwap today</p>
+<div id="regError" class="auth-error"></div>
+<label>Username</label>
+<input type="text" id="regUser" placeholder="Choose a username" />
+<label>Email</label>
+<input type="email" id="regEmail" placeholder="your@email.com" />
+<label>Password</label>
+<input type="password" id="regPass" placeholder="Create password" />
+<button onclick="handleRegister()">Register</button>
+<div class="alt-link">Already registered? <a onclick="showLog()">Sign in</a></div>
+</div>
 </div>
 
-<!-- ===== MAIN APP ===== -->
 <div id="appContainer" class="app-container">
-    <div class="topbar">
-        <div class="logo" id="logoEl">VertexSwap</div>
-        <div class="user-info">
-            <span id="displayUser">user</span>
-            <span>| Balance: <span class="bal" id="displayBal">$0.00</span></span>
-            <button class="logout-btn" onclick="handleLogout()">Logout</button>
-        </div>
-    </div>
-    <div id="announcementBar" class="announcement"></div>
-    <div class="main">
-        <div class="section-title">📹 Video Calls <small>face-swap calls</small></div>
-        <div class="feature-grid" id="gridVideo"></div>
-        <div class="section-title">🕵️ Spoofing <small>anonymous tools</small></div>
-        <div class="feature-grid" id="gridSpoof"></div>
-        <div class="section-title">🏢 Services <small>premium services</small></div>
-        <div class="feature-grid" id="gridServices"></div>
-    </div>
+<div class="topbar">
+<div class="logo" id="logoEl">VertexSwap</div>
+<div class="user-info">
+<span id="displayUser">user</span>
+<span>| Balance: <span class="bal" id="displayBal">$0.00</span></span>
+<button class="logout-btn" onclick="handleLogout()">Logout</button>
+</div>
+</div>
+<div id="announcementBar" class="announcement"></div>
+<div class="main">
+<div class="section-title">📹 Video Calls <small>face-swap calls</small></div>
+<div class="feature-grid" id="gridVideo"></div>
+<div class="section-title">🕵️ Spoofing <small>anonymous tools</small></div>
+<div class="feature-grid" id="gridSpoof"></div>
+<div class="section-title">🏢 Services <small>premium services</small></div>
+<div class="feature-grid" id="gridServices"></div>
+</div>
 </div>
 
-<!-- ===== MODAL ===== -->
 <div id="modalOverlay" class="modal-overlay"><div class="modal" id="modalContent"></div></div>
 <div id="toast" class="toast"></div>
 
-<!-- ===== FIREBASE SDK ===== -->
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 
 <script>
 // ============================================================
-//  FIREBASE CONFIG — REPLACE WITH YOUR OWN
+//  FIREBASE CONFIG
 // ============================================================
 const firebaseConfig = {
     apiKey: "AIzaSyAVNObBWNClrYzDqHk6xYvOOMOukxwJ3dU",
@@ -168,37 +159,34 @@ const firebaseConfig = {
     storageBucket: "media-fcdd8.firebasestorage.app",
     messagingSenderId: "545654470728",
     appId: "1:545654470728:web:ee2e01313888b98615007d"
-
 };
 
 firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+const database = firebase.database();
 
 // ============================================================
 //  HELPERS
 // ============================================================
 const $ = id => document.getElementById(id);
-const errDiv = (id, msg) => { const e=$(id); e.textContent=msg; e.style.display='block'; };
-
-function showToast(msg) {
-    const t=$('toast'); t.textContent=msg; t.classList.add('show');
-    setTimeout(()=>t.classList.remove('show'),3500);
-}
-function closeModal() { $('modalOverlay').classList.remove('show'); }
+const showToast = msg => { const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3500); };
+const closeModal = () => $('modalOverlay').classList.remove('show');
 $('modalOverlay').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
 
+let CURRENT_USER = null;
+
 // ============================================================
-//  FEATURES DEFINITION
+//  FEATURES DEFINITION (prices loaded from Firebase)
 // ============================================================
-const FEATURES = [
-    { cat:'video', id:'whatsapp', name:'WhatsApp FaceSwap', deposit:25, icon:'whatsapp' },
-    { cat:'video', id:'wechat',   name:'WeChat FaceSwap',   deposit:30, icon:'wechat' },
-    { cat:'video', id:'facebook', name:'Facebook FaceSwap',  deposit:35, icon:'facebook' },
-    { cat:'video', id:'telegram', name:'Telegram FaceSwap',  deposit:20, icon:'telegram' },
-    { cat:'spoof', id:'spoofmail', name:'Spoof Email', deposit:40, icon:'email' },
-    { cat:'spoof', id:'spoofcall', name:'Spoof Call',  deposit:50, icon:'phone' },
-    { cat:'service', id:'shipping', name:'Shipping Company', deposit:60, icon:'ship' },
-    { cat:'service', id:'banking',  name:'Banking Services',  deposit:75, icon:'bank' },
+const FEATURE_DEFS = [
+    { cat:'video', id:'whatsapp', name:'WhatsApp FaceSwap', icon:'whatsapp', defaultPrice:25 },
+    { cat:'video', id:'wechat',   name:'WeChat FaceSwap',   icon:'wechat',   defaultPrice:30 },
+    { cat:'video', id:'facebook', name:'Facebook FaceSwap',  icon:'facebook', defaultPrice:35 },
+    { cat:'video', id:'telegram', name:'Telegram FaceSwap',  icon:'telegram', defaultPrice:20 },
+    { cat:'video', id:'hangouts', name:'Google Hangouts FaceSwap', icon:'hangouts', defaultPrice:28 },
+    { cat:'spoof', id:'spoofmail', name:'Spoof Email', icon:'email', defaultPrice:40 },
+    { cat:'spoof', id:'spoofcall', name:'Spoof Call',  icon:'phone', defaultPrice:50 },
+    { cat:'service', id:'shipping', name:'Shipping Company', icon:'ship', defaultPrice:60 },
+    { cat:'service', id:'banking',  name:'Banking Services',  icon:'bank', defaultPrice:75 },
 ];
 
 const ICONS = {
@@ -206,20 +194,12 @@ const ICONS = {
     wechat:`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.33.33 0 0 0 .167-.054l1.903-1.114a.87.87 0 0 1 .723-.098 10.16 10.16 0 0 0 2.83.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178A1.17 1.17 0 0 1 4.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178 1.17 1.17 0 0 1-1.162-1.178c0-.651.52-1.18 1.162-1.18zm5.34 2.867c-1.797-.052-3.746.512-5.28 1.786-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 3.666 4.229 6.884 4.229.826 0 1.622-.12 2.361-.336a.73.73 0 0 1 .603.082l1.587.928a.27.27 0 0 0 .139.045.246.246 0 0 0 .242-.246c0-.06-.024-.12-.04-.178l-.325-1.233a.492.492 0 0 1 .178-.554C23.028 18.48 24 16.82 24 14.98c0-3.21-2.931-5.837-7.062-6.122zM14.033 14.2c.535 0 .969.44.969.983a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.983.97-.983zm4.844 0c.535 0 .969.44.969.983a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.983.97-.983z"/></svg>`,
     facebook:`<svg viewBox="0 0 16 16" fill="currentColor"><path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"/></svg>`,
     telegram:`<svg viewBox="0 0 16 16" fill="currentColor"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.287 5.906q-1.168.486-4.666 2.01-.567.225-.595.442c-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294q.39.01.868-.32 3.269-2.206 3.374-2.23c.05-.012.12-.026.166.016s.042.12.037.141c-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8 8 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629q.14.092.27.187c.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.4 1.4 0 0 0-.013-.315.34.34 0 0 0-.114-.217.53.53 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09"/></svg>`,
+    hangouts:`<svg viewBox="0 0 512 593" fill="currentColor"><path d="M256 0C114.6 0 0 85 0 190.2c0 61.2 33.8 115.5 86.3 151.6L64 384l68.9-37.3c11.6 3.5 23.8 5.9 36.5 7.7-2.5-10.7-3.8-21.8-3.8-33.2 0-86.5 84.5-156.7 188.8-156.7 7.9 0 15.7.4 23.4 1.2C360.3 84.7 316.2 0 256 0zm191.9 192.3c-96.8 0-175.4 67.5-175.4 150.7s78.6 150.7 175.4 150.7c14.6 0 28.7-1.5 42.1-4.3L511 512l-31.4-55.1c39.6-30.5 65.4-74.5 65.4-123.9 0-83.2-78.6-150.7-175.4-150.7h-21.7z"/></svg>`,
     email:`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>`,
     phone:`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2z"/></svg>`,
     ship:`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>`,
     bank:`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 10h3v7H4zm6.5 0h3v7h-3zM2 19h20v3H2zm15-9h3v7h-3zm-5-8L2 6v2h20V6z"/></svg>`
 };
-
-// ============================================================
-//  FIREBASE DB REFS
-// ============================================================
-const refUsers = db.ref('users');
-const refDeposits = db.ref('deposits');
-const refSettings = db.ref('settings');
-
-let CURRENT_USER = null;  // { username, email, password, balance, status }
 
 // ============================================================
 //  AUTH
@@ -231,12 +211,11 @@ function handleLogin() {
     const user = $('loginUser').value.trim();
     const pass = $('loginPass').value.trim();
     $('loginError').style.display='none';
-    if(!user||!pass){ errDiv('loginError','Fill all fields.'); return; }
-
-    refUsers.child(user).once('value').then(snap=>{
+    if(!user||!pass){ $('loginError').textContent='Fill all fields.'; $('loginError').style.display='block'; return; }
+    database.ref('users/'+user).once('value').then(snap=>{
         const data = snap.val();
-        if(!data||data.password!==pass){ errDiv('loginError','Invalid credentials.'); return; }
-        if(data.status==='blocked'){ errDiv('loginError','Account blocked. Contact admin.'); return; }
+        if(!data||data.password!==pass){ $('loginError').textContent='Invalid credentials.'; $('loginError').style.display='block'; return; }
+        if(data.status==='blocked'){ $('loginError').textContent='Account blocked.'; $('loginError').style.display='block'; return; }
         CURRENT_USER = { username:user, ...data };
         localStorage.setItem('vs_session', user);
         renderApp();
@@ -248,11 +227,10 @@ function handleRegister() {
     const email = $('regEmail').value.trim();
     const pass = $('regPass').value.trim();
     $('regError').style.display='none';
-    if(!user||!email||!pass){ errDiv('regError','Fill all fields.'); return; }
-
-    refUsers.child(user).once('value').then(snap=>{
-        if(snap.exists()){ errDiv('regError','Username taken.'); return; }
-        refUsers.child(user).set({ email, password:pass, balance:0, status:'active' });
+    if(!user||!email||!pass){ $('regError').textContent='Fill all fields.'; $('regError').style.display='block'; return; }
+    database.ref('users/'+user).once('value').then(snap=>{
+        if(snap.exists()){ $('regError').textContent='Username taken.'; $('regError').style.display='block'; return; }
+        database.ref('users/'+user).set({ email, password:pass, balance:0, status:'active' });
         CURRENT_USER = { username:user, email, password:pass, balance:0, status:'active' };
         localStorage.setItem('vs_session', user);
         renderApp();
@@ -260,12 +238,31 @@ function handleRegister() {
 }
 
 function handleLogout() {
-    CURRENT_USER=null;
-    localStorage.removeItem('vs_session');
+    CURRENT_USER=null; localStorage.removeItem('vs_session');
     $('appContainer').classList.remove('active');
     $('loginPage').style.display='flex';
     $('loginUser').value=''; $('loginPass').value='';
 }
+
+// ============================================================
+//  GET PRICES (from Firebase / defaults)
+// ============================================================
+let cachedPrices = null;
+
+function getPrices() {
+    if(cachedPrices) return Promise.resolve(cachedPrices);
+    return database.ref('featurePrices').once('value').then(snap=>{
+        const fb = snap.val()||{};
+        const prices = {};
+        FEATURE_DEFS.forEach(f => {
+            prices[f.id] = fb[f.id] !== undefined ? Number(fb[f.id]) : f.defaultPrice;
+        });
+        cachedPrices = prices;
+        return prices;
+    });
+}
+
+function invalidatePrices() { cachedPrices = null; }
 
 // ============================================================
 //  RENDER APP
@@ -277,70 +274,74 @@ function renderApp() {
     $('displayUser').textContent=CURRENT_USER.username;
     $('displayBal').textContent='$'+Number(CURRENT_USER.balance).toFixed(2);
 
-    // Settings / announcement
-    refSettings.once('value').then(snap=>{
+    database.ref('settings').once('value').then(snap=>{
         const s = snap.val()||{};
         const ann=$('announcementBar');
         if(s.announcement&&s.announcement.trim()){ ann.textContent='📢 '+s.announcement; ann.classList.add('show'); }
         else ann.classList.remove('show');
     });
 
-    renderFeatures();
+    getPrices().then(prices => renderFeatures(prices));
 }
 
-function renderFeatures() {
+function renderFeatures(prices) {
     const bal = Number(CURRENT_USER.balance);
     const grids={video:'gridVideo',spoof:'gridSpoof',service:'gridServices'};
     for(const[cat,id]of Object.entries(grids)){
         const el=$(id); el.innerHTML='';
-        FEATURES.filter(f=>f.cat===cat).forEach(f=>{
-            const ok = bal>=f.deposit;
+        FEATURE_DEFS.filter(f=>f.cat===cat).forEach(f=>{
+            const price = prices[f.id];
+            const canAfford = bal >= price;
             const card=document.createElement('div');
-            card.className='feature-card'+(ok?'':' locked');
-            card.innerHTML=`<div class="icon-wrap">${ICONS[f.icon]||''}</div><div class="fname">${f.name}</div><div class="fdep">Requires $${f.deposit}</div>${!ok?'<div class="lock-badge">🔒</div>':''}`;
-            card.addEventListener('click',()=>handleFeature(f,ok));
+            card.className='feature-card'+(canAfford?'':' locked');
+            card.innerHTML=`<div class="icon-wrap">${ICONS[f.icon]||''}</div><div class="fname">${f.name}</div><div class="fdep">$${price}</div>${!canAfford?'<div class="lock-badge">🔒</div>':''}`;
+            card.addEventListener('click', ()=>{
+                if(!canAfford){
+                    $('modalContent').innerHTML=`
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                        <h2>🔒 Insufficient Balance</h2>
+                        <p class="sub2">${f.name} costs <strong>$${price}</strong>.</p>
+                        <p style="color:#7a8ba3;font-size:13px;margin:12px 0;">Your balance: <strong style="color:#92fe9d;">$${Number(CURRENT_USER.balance).toFixed(2)}</strong></p>
+                        <button class="btn-primary" onclick="closeModal();openDeposit()">Deposit Now</button>
+                        <button class="btn-secondary" style="width:100%;margin-top:8px" onclick="closeModal()">Cancel</button>`;
+                    $('modalOverlay').classList.add('show');
+                } else {
+                    // Deduct and show error
+                    const newBal = bal - price;
+                    database.ref('users/'+CURRENT_USER.username+'/balance').set(newBal);
+                    CURRENT_USER.balance = newBal;
+                    $('displayBal').textContent='$'+newBal.toFixed(2);
+                    // re-render features to update lock states
+                    getPrices().then(p => renderFeatures(p));
+
+                    $('modalContent').innerHTML=`
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                        <div style="text-align:center;padding:20px 0">
+                            <div style="font-size:50px;margin-bottom:12px;">⚠️</div>
+                            <h2>Service Unavailable</h2>
+                            <p class="sub2">We're experiencing heavy traffic. Please try again later.</p>
+                            <div style="background:#0f1620;border-radius:10px;padding:14px;margin:16px 0;font-size:13px;color:#ffc107;">
+                                Error 503 — Server is currently at capacity.<br/>
+                                <span style="color:#7a8ba3;font-size:11px;">Expected resolution within 2–4 hours.</span>
+                            </div>
+                            <button class="btn-primary" onclick="closeModal()">OK</button>
+                        </div>`;
+                    $('modalOverlay').classList.add('show');
+                    showToast('$'+price.toFixed(2)+' deducted for '+f.name);
+                }
+            });
             el.appendChild(card);
         });
     }
-}
-
-function handleFeature(feature,ok) {
-    const modal=$('modalContent');
-    const overlay=$('modalOverlay');
-    if(!ok){
-        modal.innerHTML=`
-            <button class="close-btn" onclick="closeModal()">&times;</button>
-            <h2>🔒 Access Required</h2>
-            <p class="sub2">You need <strong>$${feature.deposit}</strong> to unlock ${feature.name}.</p>
-            <p style="color:#7a8ba3;font-size:13px;margin:12px 0;">Your balance: <strong style="color:#92fe9d;">$${Number(CURRENT_USER.balance).toFixed(2)}</strong></p>
-            <button class="btn-primary" onclick="closeModal();openDeposit()">Deposit Now</button>
-            <button class="btn-secondary" style="width:100%;margin-top:8px" onclick="closeModal()">Cancel</button>`;
-    } else {
-        modal.innerHTML=`
-            <button class="close-btn" onclick="closeModal()">&times;</button>
-            <div style="text-align:center;padding:20px 0">
-                <div style="font-size:50px;margin-bottom:12px;">⚠️</div>
-                <h2>Service Unavailable</h2>
-                <p class="sub2">We're experiencing heavy traffic. Please try again later.</p>
-                <div style="background:#0f1620;border-radius:10px;padding:14px;margin:16px 0;font-size:13px;color:#ffc107;">
-                    Error 503 — Server is currently at capacity.<br/>
-                    <span style="color:#7a8ba3;font-size:11px;">Expected resolution within 2–4 hours.</span>
-                </div>
-                <button class="btn-primary" onclick="closeModal()">OK</button>
-            </div>`;
-    }
-    overlay.classList.add('show');
 }
 
 // ============================================================
 //  DEPOSIT
 // ============================================================
 function openDeposit() {
-    const overlay=$('modalOverlay');
-    const modal=$('modalContent');
-    refSettings.once('value').then(snap=>{
+    database.ref('settings').once('value').then(snap=>{
         const s = snap.val()||{minDeposit:50,btcWallet:'bc1q...',usdtWallet:'TRX...'};
-        modal.innerHTML=`
+        $('modalContent').innerHTML=`
             <button class="close-btn" onclick="closeModal()">&times;</button>
             <h2>💰 Make a Deposit</h2>
             <p class="sub2">Minimum deposit: <strong>$${s.minDeposit}</strong></p>
@@ -355,26 +356,27 @@ function openDeposit() {
             <div id="depAddrBox" class="deposit-address" onclick="copyAddress()">${s.btcWallet}</div>
             <p style="color:#7a8ba3;font-size:11px;text-align:center;">Send exact amount. Deposits manually approved.</p>
             <button class="btn-primary" onclick="submitDeposit()">Submit Deposit</button>`;
-        overlay.classList.add('show');
-        $('depAsset').addEventListener('change',function(){
-            const addr=$('depAddrBox');
-            const val = this.value==='btc' ? (s.btcWallet||'bc1q...') : (s.usdtWallet||'TRX...');
-            addr.textContent=val; addr.classList.remove('copied');
-        });
+        $('modalOverlay').classList.add('show');
+        setTimeout(()=>{
+            const sel=$('depAsset');
+            if(sel) sel.addEventListener('change',function(){
+                const addr=$('depAddrBox');
+                addr.textContent = this.value==='btc' ? (s.btcWallet||'bc1q...') : (s.usdtWallet||'TRX...');
+                addr.classList.remove('copied');
+            });
+        },50);
     });
 }
 
 function copyAddress() {
-    const addr=$('depAddrBox');
-    const text = addr.textContent;
+    const addr=$('depAddrBox'); if(!addr) return;
+    const text = addr.textContent.replace('✅ Copied! ','');
     if(navigator.clipboard){
         navigator.clipboard.writeText(text).then(()=>{
-            addr.classList.add('copied');
-            addr.textContent='✅ Copied! '+text;
+            addr.classList.add('copied'); addr.textContent='✅ Copied! '+text;
             setTimeout(()=>{ addr.textContent=text; addr.classList.remove('copied'); },2000);
         });
     } else {
-        // fallback
         const ta = document.createElement('textarea');
         ta.value=text; document.body.appendChild(ta); ta.select();
         document.execCommand('copy'); document.body.removeChild(ta);
@@ -384,61 +386,45 @@ function copyAddress() {
 }
 
 function submitDeposit() {
-    const asset = $('depAsset').value;
-    const amount = parseFloat($('depAmount').value);
-    if(!amount||amount<0){ showToast('Enter a valid amount.'); return; }
-
-    refSettings.once('value').then(snap=>{
+    const asset=$('depAsset'); const amount=$('depAmount');
+    if(!asset||!amount){ showToast('Please wait for form to load.'); return; }
+    const assetVal = asset.value;
+    const amountVal = parseFloat(amount.value);
+    if(!amountVal||amountVal<0){ showToast('Enter a valid amount.'); return; }
+    database.ref('settings').once('value').then(snap=>{
         const s = snap.val()||{minDeposit:50};
-        if(amount<s.minDeposit){ showToast('Minimum deposit is $'+s.minDeposit); return; }
+        if(amountVal<s.minDeposit){ showToast('Minimum deposit is $'+s.minDeposit); return; }
         const depId = Date.now().toString();
-        refDeposits.child(depId).set({
-            id: depId,
-            username: CURRENT_USER.username,
-            asset: asset==='btc'?'BTC':'USDT (TRC-20)',
-            amount: amount,
-            status: 'pending',
-            date: new Date().toISOString()
+        database.ref('deposits/'+depId).set({
+            id: depId, username: CURRENT_USER.username,
+            asset: assetVal==='btc'?'BTC':'USDT (TRC-20)',
+            amount: amountVal, status: 'pending', date: new Date().toISOString()
         });
-        showToast('Deposit submitted for approval.');
-        closeModal();
+        showToast('Deposit submitted for approval.'); closeModal();
     });
 }
 
 // ============================================================
-//  ADMIN — long press (3s) on logo
+//  ADMIN
 // ============================================================
 let pressTimer = null;
-$('logoEl').addEventListener('mousedown', function(e){
-    pressTimer = setTimeout(() => {
-        pressTimer = null;
-        openAdmin();
-    }, 2000); // 2 second hold
-});
-$('logoEl').addEventListener('mouseup', function(){ if(pressTimer){ clearTimeout(pressTimer); pressTimer=null; } });
-$('logoEl').addEventListener('mouseleave', function(){ if(pressTimer){ clearTimeout(pressTimer); pressTimer=null; } });
-// touch support
-$('logoEl').addEventListener('touchstart', function(e){
-    pressTimer = setTimeout(() => {
-        pressTimer = null;
-        openAdmin();
-    }, 2000);
-});
-$('logoEl').addEventListener('touchend', function(){ if(pressTimer){ clearTimeout(pressTimer); pressTimer=null; } });
-$('logoEl').addEventListener('touchmove', function(){ if(pressTimer){ clearTimeout(pressTimer); pressTimer=null; } });
-
-// Also console shortcut
-// Just type: openAdmin()
+const logoEl = $('logoEl');
+if(logoEl){
+    logoEl.addEventListener('mousedown', ()=>{ pressTimer = setTimeout(()=>{ pressTimer=null; openAdmin(); },2000); });
+    logoEl.addEventListener('mouseup', ()=>{ if(pressTimer){ clearTimeout(pressTimer); pressTimer=null; } });
+    logoEl.addEventListener('mouseleave', ()=>{ if(pressTimer){ clearTimeout(pressTimer); pressTimer=null; } });
+    logoEl.addEventListener('touchstart', ()=>{ pressTimer = setTimeout(()=>{ pressTimer=null; openAdmin(); },2000); });
+    logoEl.addEventListener('touchend', ()=>{ if(pressTimer){ clearTimeout(pressTimer); pressTimer=null; } });
+    logoEl.addEventListener('touchmove', ()=>{ if(pressTimer){ clearTimeout(pressTimer); pressTimer=null; } });
+}
 
 function openAdmin() {
-    const overlay=$('modalOverlay');
-    const modal=$('modalContent');
-
     Promise.all([
-        refUsers.once('value'),
-        refDeposits.once('value'),
-        refSettings.once('value')
-    ]).then(([uSnap,dSnap,sSnap])=>{
+        database.ref('users').once('value'),
+        database.ref('deposits').once('value'),
+        database.ref('settings').once('value'),
+        getPrices()
+    ]).then(([uSnap,dSnap,sSnap,prices])=>{
         const users = uSnap.val()||{};
         const deps = dSnap.val()||{};
         const settings = sSnap.val()||{minDeposit:50,announcement:'',btcWallet:'',usdtWallet:''};
@@ -446,7 +432,7 @@ function openAdmin() {
         let userRows = Object.entries(users).map(([uname,udata])=>`
             <tr>
                 <td>${uname}</td>
-                <td>${udata.balance.toFixed(2)}</td>
+                <td>$${Number(udata.balance).toFixed(2)}</td>
                 <td>${udata.status||'active'}</td>
                 <td>
                     <button class="btn-sm green" onclick="adminCredit('${uname}')">Credit</button>
@@ -455,7 +441,7 @@ function openAdmin() {
                 </td>
             </tr>`).join('');
 
-        let depList = Object.values(deps).sort((a,b)=>b.id-a.id);
+        let depList = Object.values(deps).sort((a,b)=>Number(b.id)-Number(a.id));
         let depRows = depList.map(d=>`
             <div class="deposit-item">
                 <span><strong>${d.username}</strong> — $${d.amount} (${d.asset})</span>
@@ -467,17 +453,30 @@ function openAdmin() {
                 </span>
             </div>`).join('')||'<p style="color:#7a8ba3;font-size:13px;">No deposits.</p>';
 
-        modal.innerHTML=`
+        let pricingRows = FEATURE_DEFS.map(f => `
+            <div class="pricing-item">
+                <div class="icon-wrap" style="height:30px;width:30px;">${ICONS[f.icon]||''}</div>
+                <label>${f.name}</label>
+                <input type="number" id="price_${f.id}" value="${prices[f.id]}" min="1" step="0.01" />
+            </div>`).join('');
+
+        $('modalContent').innerHTML=`
             <button class="close-btn" onclick="closeModal()">&times;</button>
             <h2>⚙️ Admin Panel</h2>
-            <p class="sub2">Manage users, deposits, and settings</p>
+            <p class="sub2">Manage users, deposits, pricing &amp; settings</p>
             <div class="tabs">
                 <button class="active" onclick="admTab(this,'users')">Users</button>
                 <button onclick="admTab(this,'deposits')">Deposits</button>
+                <button onclick="admTab(this,'pricing')">Pricing</button>
                 <button onclick="admTab(this,'settings')">Settings</button>
             </div>
-            <div id="admUsers"><table class="admin-table"><thead><tr><th>User</th><th>Bal</th><th>Status</th><th>Actions</th></tr></thead><tbody>${userRows}</tbody></table></div>
+            <div id="admUsers"><table class="admin-table"><thead><tr><th>User</th><th>Balance</th><th>Status</th><th>Actions</th></tr></thead><tbody>${userRows}</tbody></table></div>
             <div id="admDeposits" style="display:none"><div style="background:#0f1620;border-radius:10px;padding:12px;">${depRows}</div></div>
+            <div id="admPricing" style="display:none">
+                <p style="color:#7a8ba3;font-size:12px;margin-bottom:12px;">Set prices for each feature. Users must pay to unlock.</p>
+                <div class="pricing-grid">${pricingRows}</div>
+                <button class="btn-primary" onclick="admSavePrices()">Save Prices</button>
+            </div>
             <div id="admSettings" style="display:none">
                 <label>Min Deposit ($)</label>
                 <input type="number" id="admMinDep" value="${settings.minDeposit||50}" step="0.01" />
@@ -489,62 +488,81 @@ function openAdmin() {
                 <textarea id="admAnn" rows="3" style="resize:vertical">${settings.announcement||''}</textarea>
                 <button class="btn-primary" onclick="admSaveSettings()">Save Settings</button>
             </div>`;
-        overlay.classList.add('show');
+        $('modalOverlay').classList.add('show');
+
+        // Resize SVG icons in pricing
+        document.querySelectorAll('#admPricing .icon-wrap svg').forEach(s=>{
+            s.style.width='24px'; s.style.height='24px';
+        });
     });
 }
 
 function admTab(btn,tab){
     document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    ['admUsers','admDeposits','admSettings'].forEach(id=>{
-        $(id).style.display=id==='adm'+tab.charAt(0).toUpperCase()+tab.slice(1)?'block':'none';
+    ['admUsers','admDeposits','admPricing','admSettings'].forEach(id=>{
+        const map = {users:'admUsers',deposits:'admDeposits',pricing:'admPricing',settings:'admSettings'};
+        $(id).style.display = id===map[tab] ? 'block' : 'none';
     });
 }
 
 function adminCredit(uname){
     const amt = prompt('Credit amount ($):');
     if(!amt||isNaN(amt)||parseFloat(amt)<=0)return;
-    refUsers.child(uname+'/balance').once('value').then(s=>{
+    database.ref('users/'+uname+'/balance').once('value').then(s=>{
         const cur = s.val()||0;
-        refUsers.child(uname+'/balance').set(cur+parseFloat(amt));
-        showToast(`Credited $${amt} to ${uname}`);
+        database.ref('users/'+uname+'/balance').set(cur+parseFloat(amt));
+        showToast('$'+amt+' credited to '+uname);
         setTimeout(openAdmin,300);
     });
 }
 
 function adminDelete(uname){
-    if(!confirm(`Delete "${uname}"?`))return;
-    refUsers.child(uname).remove();
-    showToast(`Deleted ${uname}`);
+    if(!confirm('Delete "'+uname+'"?'))return;
+    database.ref('users/'+uname).remove();
+    showToast('Deleted '+uname);
     setTimeout(openAdmin,300);
 }
 
 function adminToggle(uname){
-    refUsers.child(uname+'/status').once('value').then(s=>{
+    database.ref('users/'+uname+'/status').once('value').then(s=>{
         const cur = s.val()||'active';
-        refUsers.child(uname+'/status').set(cur==='active'?'blocked':'active');
-        showToast(`${uname} toggled`);
+        database.ref('users/'+uname+'/status').set(cur==='active'?'blocked':'active');
+        showToast(uname+' toggled');
         setTimeout(openAdmin,300);
     });
 }
 
 function adminApprove(depId){
-    refDeposits.child(depId).once('value').then(s=>{
+    database.ref('deposits/'+depId).once('value').then(s=>{
         const d = s.val();
         if(!d||d.status!=='pending')return;
-        refUsers.child(d.username+'/balance').once('value').then(bSnap=>{
+        database.ref('users/'+d.username+'/balance').once('value').then(bSnap=>{
             const cur = bSnap.val()||0;
-            refUsers.child(d.username+'/balance').set(cur+d.amount);
-            refDeposits.child(depId+'/status').set('approved');
-            showToast(`Approved $${d.amount} for ${d.username}`);
+            database.ref('users/'+d.username+'/balance').set(cur+d.amount);
+            database.ref('deposits/'+depId+'/status').set('approved');
+            showToast('$'+d.amount+' approved for '+d.username);
             setTimeout(openAdmin,300);
         });
     });
 }
 
 function adminReject(depId){
-    refDeposits.child(depId+'/status').set('rejected');
+    database.ref('deposits/'+depId+'/status').set('rejected');
     showToast('Deposit rejected');
+    setTimeout(openAdmin,300);
+}
+
+function admSavePrices(){
+    const updates = {};
+    FEATURE_DEFS.forEach(f => {
+        const el = $('price_'+f.id);
+        if(el) updates[f.id] = parseFloat(el.value) || f.defaultPrice;
+    });
+    database.ref('featurePrices').set(updates);
+    invalidatePrices();
+    showToast('Prices saved');
+    if(CURRENT_USER) renderApp();
     setTimeout(openAdmin,300);
 }
 
@@ -554,19 +572,18 @@ function admSaveSettings(){
     const usdt = $('admUsdt').value.trim();
     const ann = $('admAnn').value.trim();
     if(!minDep||minDep<=0){showToast('Invalid min deposit');return;}
-    refSettings.set({minDeposit:minDep,btcWallet:btc,usdtWallet:usdt,announcement:ann});
-    showToast('Settings saved');
-    closeModal();
+    database.ref('settings').set({minDeposit:minDep,btcWallet:btc,usdtWallet:usdt,announcement:ann});
+    showToast('Settings saved'); closeModal();
     if(CURRENT_USER)renderApp();
 }
 
 // ============================================================
-//  BOOT — check session
+//  BOOT
 // ============================================================
 (function boot(){
     const session = localStorage.getItem('vs_session');
     if(session){
-        refUsers.child(session).once('value').then(snap=>{
+        database.ref('users/'+session).once('value').then(snap=>{
             const data = snap.val();
             if(data&&data.status!=='blocked'){
                 CURRENT_USER = { username:session, ...data };
