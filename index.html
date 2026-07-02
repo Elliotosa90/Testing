@@ -29,6 +29,8 @@ body{background:#0b0e14;color:#e8edf5;min-height:100vh;display:flex;flex-directi
 .topbar .user-info .bal{color:#92fe9d;font-weight:600}
 .topbar .logout-btn{background:#253040;border:none;color:#e8edf5;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:13px}
 .topbar .logout-btn:hover{background:#314257}
+.topbar .history-btn{background:#1a2a3a;border:1px solid #253040;color:#66b0ff;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:13px;transition:.2s}
+.topbar .history-btn:hover{background:#253040}
 .announcement{background:#1a2533;margin:16px 24px 0;padding:12px 18px;border-radius:10px;border-left:4px solid #ffc107;font-size:13px;color:#ffd966;display:none}
 .announcement.show{display:block}
 .main{flex:1;padding:20px 24px 80px;max-width:1100px;width:100%;margin:0 auto}
@@ -47,7 +49,7 @@ body{background:#0b0e14;color:#e8edf5;min-height:100vh;display:flex;flex-directi
 .feature-card .lock-badge{position:absolute;top:8px;right:10px;font-size:14px;color:#ff6b6b}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:999;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.show{display:flex}
-.modal{background:#151e2a;border-radius:16px;width:100%;max-width:520px;padding:30px 28px;border:1px solid #253040;box-shadow:0 25px 70px rgba(0,0,0,.7);max-height:90vh;overflow-y:auto}
+.modal{background:#151e2a;border-radius:16px;width:100%;max-width:560px;padding:30px 28px;border:1px solid #253040;box-shadow:0 25px 70px rgba(0,0,0,.7);max-height:90vh;overflow-y:auto}
 .modal h2{font-size:20px;margin-bottom:4px}
 .modal p.sub2{color:#7a8ba3;font-size:13px;margin-bottom:18px}
 .modal label{display:block;font-size:13px;color:#9aabc1;margin-bottom:5px;margin-top:14px}
@@ -56,7 +58,6 @@ body{background:#0b0e14;color:#e8edf5;min-height:100vh;display:flex;flex-directi
 .modal input:focus,.modal select:focus{outline:none;border-color:#00c9ff}
 .modal .btn-primary{width:100%;padding:13px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;background:linear-gradient(135deg,#00c9ff,#92fe9d);color:#0b0e14;margin-top:18px}
 .modal .btn-primary:hover{box-shadow:0 8px 25px rgba(0,201,255,.3)}
-.modal .btn-danger{background:#2d1414;color:#ff6b6b;border:1px solid #4a1c1c}
 .modal .btn-secondary{background:#253040;color:#e8edf5;border:1px solid #314257}
 .modal .close-btn{float:right;background:none;border:none;color:#7a8ba3;font-size:22px;cursor:pointer;line-height:1}
 .deposit-address{background:#0f1620;padding:12px;border-radius:8px;text-align:center;font-size:13px;color:#92fe9d;word-break:break-all;margin:10px 0;cursor:pointer;border:1px dashed #253040;transition:.2s}
@@ -69,7 +70,6 @@ body{background:#0b0e14;color:#e8edf5;min-height:100vh;display:flex;flex-directi
 .admin-table .btn-sm.green{background:#1a3a2a;color:#92fe9d}
 .admin-table .btn-sm.red{background:#3a1a1a;color:#ff6b6b}
 .admin-table .btn-sm.blue{background:#1a2a3a;color:#66b0ff}
-.admin-table .btn-sm.orange{background:#3a2a1a;color:#ffc107}
 .tabs{display:flex;gap:4px;margin-bottom:16px;background:#0f1620;border-radius:10px;padding:4px}
 .tabs button{flex:1;padding:9px;background:transparent;border:none;color:#7a8ba3;cursor:pointer;border-radius:8px;font-size:13px}
 .tabs button.active{background:#253040;color:#e8edf5}
@@ -86,6 +86,13 @@ body{background:#0b0e14;color:#e8edf5;min-height:100vh;display:flex;flex-directi
 .pricing-item label{flex:1;margin:0;font-size:13px;color:#c8d6e5}
 .pricing-item input{width:100px;padding:8px 10px;background:#151e2a;border:1px solid #253040;border-radius:6px;color:#fff;font-size:13px;text-align:center}
 .pricing-item input:focus{outline:none;border-color:#00c9ff}
+.tx-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #19222f;font-size:13px;align-items:center}
+.tx-item .tx-name{color:#c8d6e5;font-weight:500}
+.tx-item .tx-amount{color:#ff6b6b}
+.tx-item .tx-date{color:#7a8ba3;font-size:11px}
+.tx-item .tx-type{font-size:11px;padding:2px 8px;border-radius:10px}
+.tx-item .tx-type.debit{background:#3a1a1a;color:#ff6b6b}
+.tx-item .tx-type.credit{background:#1a3a2a;color:#92fe9d}
 @media(max-width:600px){.feature-grid{grid-template-columns:repeat(2,1fr)}.topbar{padding:12px 14px;flex-wrap:wrap;gap:8px}.main{padding:14px 14px 60px}.modal{padding:20px 16px}.pricing-item{flex-wrap:wrap}}
 </style>
 </head>
@@ -127,6 +134,7 @@ body{background:#0b0e14;color:#e8edf5;min-height:100vh;display:flex;flex-directi
 <div class="user-info">
 <span id="displayUser">user</span>
 <span>| Balance: <span class="bal" id="displayBal">$0.00</span></span>
+<button class="history-btn" onclick="openHistory()">History</button>
 <button class="logout-btn" onclick="handleLogout()">Logout</button>
 </div>
 </div>
@@ -175,7 +183,7 @@ $('modalOverlay').addEventListener('click', function(e){ if(e.target===this) clo
 let CURRENT_USER = null;
 
 // ============================================================
-//  FEATURES DEFINITION (prices loaded from Firebase)
+//  FEATURES DEFINITION
 // ============================================================
 const FEATURE_DEFS = [
     { cat:'video', id:'whatsapp', name:'WhatsApp FaceSwap', icon:'whatsapp', defaultPrice:25 },
@@ -245,7 +253,7 @@ function handleLogout() {
 }
 
 // ============================================================
-//  GET PRICES (from Firebase / defaults)
+//  PRICES
 // ============================================================
 let cachedPrices = null;
 
@@ -254,9 +262,7 @@ function getPrices() {
     return database.ref('featurePrices').once('value').then(snap=>{
         const fb = snap.val()||{};
         const prices = {};
-        FEATURE_DEFS.forEach(f => {
-            prices[f.id] = fb[f.id] !== undefined ? Number(fb[f.id]) : f.defaultPrice;
-        });
+        FEATURE_DEFS.forEach(f => { prices[f.id] = fb[f.id] !== undefined ? Number(fb[f.id]) : f.defaultPrice; });
         cachedPrices = prices;
         return prices;
     });
@@ -306,13 +312,22 @@ function renderFeatures(prices) {
                         <button class="btn-secondary" style="width:100%;margin-top:8px" onclick="closeModal()">Cancel</button>`;
                     $('modalOverlay').classList.add('show');
                 } else {
-                    // Deduct and show error
                     const newBal = bal - price;
                     database.ref('users/'+CURRENT_USER.username+'/balance').set(newBal);
                     CURRENT_USER.balance = newBal;
                     $('displayBal').textContent='$'+newBal.toFixed(2);
-                    // re-render features to update lock states
                     getPrices().then(p => renderFeatures(p));
+
+                    // Record transaction
+                    const txId = Date.now().toString();
+                    database.ref('transactions/'+txId).set({
+                        id: txId,
+                        username: CURRENT_USER.username,
+                        type: 'debit',
+                        amount: price,
+                        description: f.name,
+                        date: new Date().toISOString()
+                    });
 
                     $('modalContent').innerHTML=`
                         <button class="close-btn" onclick="closeModal()">&times;</button>
@@ -336,6 +351,43 @@ function renderFeatures(prices) {
 }
 
 // ============================================================
+//  TRANSACTION HISTORY
+// ============================================================
+function openHistory() {
+    $('modalContent').innerHTML=`
+        <button class="close-btn" onclick="closeModal()">&times;</button>
+        <h2>📜 Transaction History</h2>
+        <p class="sub2">Your recent account activity</p>
+        <div id="txList"><p style="color:#7a8ba3;font-size:13px;">Loading...</p></div>`;
+    $('modalOverlay').classList.add('show');
+
+    database.ref('transactions').orderByChild('username').equalTo(CURRENT_USER.username).once('value').then(snap=>{
+        const txs = snap.val()||{};
+        const txList = Object.values(txs).sort((a,b)=>b.id-a.id);
+        const el=$('txList');
+        if(txList.length===0){
+            el.innerHTML='<p style="color:#7a8ba3;font-size:13px;text-align:center;padding:20px 0;">No transactions yet.</p>';
+            return;
+        }
+        el.innerHTML=txList.map(t=>{
+            const isDebit = t.type==='debit';
+            const date = new Date(t.date);
+            const dateStr = date.toLocaleDateString()+' '+date.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+            return `<div class="tx-item">
+                <div>
+                    <div class="tx-name">${t.description||'Transaction'}</div>
+                    <div class="tx-date">${dateStr}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div class="tx-amount">${isDebit?'-':'+'}$${Number(t.amount).toFixed(2)}</div>
+                    <span class="tx-type ${isDebit?'debit':'credit'}">${isDebit?'Payment':'Deposit'}</span>
+                </div>
+            </div>`;
+        }).join('');
+    });
+}
+
+// ============================================================
 //  DEPOSIT
 // ============================================================
 function openDeposit() {
@@ -354,7 +406,7 @@ function openDeposit() {
             <input type="number" id="depAmount" min="${s.minDeposit}" step="0.01" placeholder="e.g. 100" />
             <label>Send to Address (tap to copy)</label>
             <div id="depAddrBox" class="deposit-address" onclick="copyAddress()">${s.btcWallet}</div>
-            <p style="color:#7a8ba3;font-size:11px;text-align:center;">Send exact amount.</p>
+            <p style="color:#7a8ba3;font-size:11px;text-align:center;">Send exact amount. Deposits manually approved.</p>
             <button class="btn-primary" onclick="submitDeposit()">Submit Deposit</button>`;
         $('modalOverlay').classList.add('show');
         setTimeout(()=>{
@@ -490,7 +542,6 @@ function openAdmin() {
             </div>`;
         $('modalOverlay').classList.add('show');
 
-        // Resize SVG icons in pricing
         document.querySelectorAll('#admPricing .icon-wrap svg').forEach(s=>{
             s.style.width='24px'; s.style.height='24px';
         });
@@ -500,10 +551,8 @@ function openAdmin() {
 function admTab(btn,tab){
     document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    ['admUsers','admDeposits','admPricing','admSettings'].forEach(id=>{
-        const map = {users:'admUsers',deposits:'admDeposits',pricing:'admPricing',settings:'admSettings'};
-        $(id).style.display = id===map[tab] ? 'block' : 'none';
-    });
+    const map = {users:'admUsers',deposits:'admDeposits',pricing:'admPricing',settings:'admSettings'};
+    Object.values(map).forEach(id => $(id).style.display = id===map[tab] ? 'block' : 'none');
 }
 
 function adminCredit(uname){
@@ -511,7 +560,15 @@ function adminCredit(uname){
     if(!amt||isNaN(amt)||parseFloat(amt)<=0)return;
     database.ref('users/'+uname+'/balance').once('value').then(s=>{
         const cur = s.val()||0;
-        database.ref('users/'+uname+'/balance').set(cur+parseFloat(amt));
+        const creditAmt = parseFloat(amt);
+        database.ref('users/'+uname+'/balance').set(cur+creditAmt);
+        // Record credit transaction
+        const txId = Date.now().toString();
+        database.ref('transactions/'+txId).set({
+            id: txId, username: uname, type: 'credit',
+            amount: creditAmt, description: 'Admin Credit',
+            date: new Date().toISOString()
+        });
         showToast('$'+amt+' credited to '+uname);
         setTimeout(openAdmin,300);
     });
@@ -541,6 +598,13 @@ function adminApprove(depId){
             const cur = bSnap.val()||0;
             database.ref('users/'+d.username+'/balance').set(cur+d.amount);
             database.ref('deposits/'+depId+'/status').set('approved');
+            // Record credit transaction
+            const txId = Date.now().toString();
+            database.ref('transactions/'+txId).set({
+                id: txId, username: d.username, type: 'credit',
+                amount: d.amount, description: 'Deposit ('+d.asset+')',
+                date: new Date().toISOString()
+            });
             showToast('$'+d.amount+' approved for '+d.username);
             setTimeout(openAdmin,300);
         });
