@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Track Order - MD Thrift</title>
+<style>
+  body{font-family:system-ui;background:#f5f5f5;padding:20px}
+  .box{background:#fff;padding:20px;border-radius:12px;max-width:600px;margin:auto;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+</style>
+</head>
+<body>
+<div class="box">
+  <h2>Order Tracking</h2>
+  <div id="result">Loading...</div>
+  <a href="index.html">← Back to Shop</a>
+</div>
+<script>
+let params = new URLSearchParams(window.location.search);
+let id = params.get('id');
+let orders = JSON.parse(localStorage.getItem('md_orders')) || [];
+let order = orders.find(o=>o.id===id);
+if(order){
+  result.innerHTML = `
+    <p><b>Tracking #: </b>${order.id}</p>
+    <p><b>Status: </b>${order.status}</p>
+    <p><b>Payment: </b>${order.payment} ${order.cryptoPaid?'(Confirmed)':''}</p>
+    <p><b>Delivery to: </b>${order.buyer.address}, ${order.buyer.country}</p>
+    <h3>Items</h3>
+    ${order.items.map(i=>`<p>${i.name} - ₦${i.price.toLocaleString()}</p>`).join('')}
+  `;
+} else {
+  result.innerHTML = "Order not found. Please check your tracking number.";
+}
+</script>
+</body>
+</html>
