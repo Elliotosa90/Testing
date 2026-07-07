@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MD Thrift and More</title>
+<style>
+  :root{--primary:#2a9d8f;--dark:#264653;--accent:#e9c46a;--bg:#fefefe}
+  *{box-sizing:border-box;font-family:system-ui,Segoe UI,Roboto,Arial}
+  body{margin:0;background:var(--bg);color:#333}
+  header{background:var(--dark);color:#fff;padding:16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0}
+  header h1{margin:0;font-size:20px}
+  .cart-btn{background:var(--primary);border:none;color:#fff;padding:8px 14px;border-radius:8px;cursor:pointer}
+  .hero{background:url('https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=1200') center/cover;height:220px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:28px;font-weight:700;text-shadow:0 2px 6px #000}
+  .products{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;padding:20px}
+  .card{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:12px;text-align:center}
+  .card img{width:100%;height:180px;object-fit:cover;border-radius:8px}
+  .card button{background:var(--primary);color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;margin-top:8px}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:20px}
+  .modal.active{display:flex}
+  .modal-content{background:#fff;padding:20px;border-radius:12px;width:100%;max-width:500px;max-height:90vh;overflow:auto}
+  input,select,textarea{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:8px}
+  .btn{background:var(--primary);color:#fff;border:none;padding:10px 16px;border-radius:8px;cursor:pointer}
+  .btn-danger{background:#e76f51}
+  .hidden-dot{position:fixed;bottom:5px;right:5px;width:10px;height:10px;border-radius:50%;opacity:.2;cursor:pointer}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{border:1px solid #ddd;padding:6px;text-align:left}
+  .timer{font-weight:700;color:#e76f51}
+  .track-box{padding:20px;text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>MD Thrift and More</h1>
+  <div>
+    <button class="cart-btn" onclick="openCart()">Cart (<span id="cartCount">0</span>)</button>
+  </div>
+</header>
+
+<div class="hero">Quality Thrift & More</div>
+
+<div class="products" id="productList"></div>
+
+<div class="track-box">
+  <h3>Track Your Order</h3>
+  <input type="text" id="trackInput" placeholder="Enter Tracking Number">
+  <button class="btn" onclick="goToTrack()">Track</button>
+</div>
+
+<!-- Cart Modal -->
+<div class="modal" id="cartModal">
+  <div class="modal-content">
+    <h2>Checkout</h2>
+    <div id="cartItems"></div>
+    <h3>Buyer Info</h3>
+    <input id="email" placeholder="Email Address" type="email" required>
+    <input id="phone" placeholder="Phone Number" required>
+    <textarea id="address" placeholder="House Delivery Address" required></textarea>
+    <input id="country" placeholder="Country" required>
+    <h3>Payment Method</h3>
+    <select id="paymentMethod" onchange="toggleCrypto()">
+      <option value="cod">Pay on Delivery</option>
+      <option value="crypto">Pay Now - Crypto</option>
+    </select>
+    <div id="cryptoBox" style="display:none">
+      <p>Send payment to this address within <span class="timer" id="timer">30:00</span></p>
+      <p><b>BTC: bc1qmdthriftandmoreexampleaddress</b></p>
+      <button class="btn" onclick="confirmCryptoPayment()">I Have Paid</button>
+    </div>
+    <button class="btn" onclick="placeOrder()">Place Order</button>
+    <button class="btn btn-danger" onclick="closeModal('cartModal')">Close</button>
+  </div>
+</div>
+
+<!-- Admin Modal -->
+<div class="modal" id="adminModal">
+  <div class="modal-content">
+    <h2>Admin Panel</h2>
+    <button onclick="showTab('productsTab')">Products</button>
+    <button onclick="showTab('ordersTab')">Orders</button>
+    <div id="productsTab">
+      <h3>Add/Edit Product</h3>
+      <input id="pName" placeholder="Product Name">
+      <input id="pPrice" placeholder="Price" type="number">
+      <input id="pImg" placeholder="Image URL">
+      <button class="btn" onclick="saveProduct()">Save Product</button>
+      <div id="adminProducts"></div>
+    </div>
+    <div id="ordersTab" style="display:none">
+      <h3>All Orders</h3>
+      <table id="ordersTable"></table>
+    </div>
+    <button class="btn btn-danger" onclick="closeModal('adminModal')">Close</button>
+  </div>
+</div>
+
+<div class="hidden-dot" ondblclick="adminLogin()"></div>
+
+<script>
+let products = JSON.parse(localStorage.getItem('md_products')) || [
+  {id:1,name:"Vintage Denim Jacket",price:25000,img:"https://images.unsplash.com/photo-1551537482-f2075a1d41f2?q=80&w=400"},
+  {id:2,name:"Thrift Sneakers",price:18000,img:"https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=400"},
+  {id:3,name:"Graphic Tee",price:8000,img:"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=400"},
+  {id:4,name:"Cargo Pants",price:15000,img:"https://images.unsplash.com/photo-1473966968860-3ff3ff1b2c16?q=80&w=400"}
+];
+let cart = [];
+let orders = JSON.parse(localStorage.getItem('md_orders')) || [];
+let timerInterval;
+
+function renderProducts(){
+  document.getElementById('productList').innerHTML = products.map(p=>`
+    <div class="card">
+      <img src="${p.img}" alt="${p.name}">
+      <h3>${p.name}</h3>
+      <p>₦${p.price.toLocaleString()}</p>
+      <button onclick="addToCart(${p.id})">Add to Cart</button>
+    </div>
+  `).join('');
+}
+
+function addToCart(id){
+  let p = products.find(x=>x.id===id);
+  cart.push(p);
+  document.getElementById('cartCount').innerText = cart.length;
+  alert(p.name + " added to cart");
+}
+
+function openCart(){
+  document.getElementById('cartModal').classList.add('active');
+  document.getElementById('cartItems').innerHTML = cart.map((p,i)=>`<p>${p.name} - ₦${p.price.toLocaleString()} <button onclick="cart.splice(${i},1);openCart()">x</button></p>`).join('') || "Cart empty";
+}
+
+function closeModal(id){document.getElementById(id).classList.remove('active');clearInterval(timerInterval)}
+
+function toggleCrypto(){
+  let show = document.getElementById('paymentMethod').value==='crypto';
+  document.getElementById('cryptoBox').style.display = show?'block':'none';
+  if(show) startTimer(30*60);
+}
+
+function startTimer(seconds){
+  clearInterval(timerInterval);
+  let s=seconds;
+  timerInterval=setInterval(()=>{
+    let m=Math.floor(s/60), sec=s%60;
+    document.getElementById('timer').innerText=`${m}:${sec<10?'0':''}${sec}`;
+    if(s--<=0){clearInterval(timerInterval);alert("Crypto payment time expired")}
+  },1000);
+}
+
+function confirmCryptoPayment(){window.cryptoPaid=true;alert("Payment marked as sent. Complete order to confirm.")}
+
+function placeOrder(){
+  if(cart.length===0) return alert("Cart is empty");
+  let order = {
+    id: 'MD'+Date.now(),
+    items: cart,
+    buyer: {email:email.value,phone:phone.value,address:address.value,country:country.value},
+    payment: paymentMethod.value,
+    cryptoPaid: paymentMethod.value==='crypto'?!!window.cryptoPaid:false,
+    status: paymentMethod.value==='cod'?'Processing':(window.cryptoPaid?'Paid':'Awaiting Payment'),
+    date: new Date().toLocaleString()
+  };
+  orders.push(order);
+  localStorage.setItem('md_orders',JSON.stringify(orders));
+  cart=[];document.getElementById('cartCount').innerText=0;
+  alert("Order placed! Your tracking number: "+order.id);
+  closeModal('cartModal');
+  window.cryptoPaid=false;
+}
+
+function adminLogin(){
+  let pass=prompt("Admin Password");
+  if(pass==="admin123"){document.getElementById('adminModal').classList.add('active');renderAdmin()}
+  else alert("Wrong password")
+}
+
+function renderAdmin(){
+  document.getElementById('adminProducts').innerHTML = products.map(p=>`
+    <p>${p.name} - ₦${p.price} <button onclick="deleteProduct(${p.id})">Delete</button></p>
+  `).join('');
+  document.getElementById('ordersTable').innerHTML = `
+    <tr><th>ID</th><th>Buyer</th><th>Total</th><th>Payment</th><th>Status</th><th>Action</th></tr>
+    ${orders.map(o=>`<tr>
+      <td>${o.id}</td>
+      <td>${o.buyer.email}<br>${o.buyer.phone}</td>
+      <td>₦${o.items.reduce((a,b)=>a+b.price,0).toLocaleString()}</td>
+      <td>${o.payment}</td>
+      <td><select onchange="updateStatus('${o.id}',this.value)">
+        <option ${o.status==='Processing'?'selected':''}>Processing</option>
+        <option ${o.status==='Paid'?'selected':''}>Paid</option>
+        <option ${o.status==='Shipped'?'selected':''}>Shipped</option>
+        <option ${o.status==='Cancelled'?'selected':''}>Cancelled</option>
+      </select></td>
+      <td><button onclick="deleteOrder('${o.id}')">Cancel</button></td>
+    </tr>`).join('')}
+  `;
+}
+
+function saveProduct(){
+  products.push({id:Date.now(),name:pName.value,price:+pPrice.value,img:pImg.value});
+  localStorage.setItem('md_products',JSON.stringify(products));renderProducts();renderAdmin();
+}
+function deleteProduct(id){products=products.filter(p=>p.id!==id);localStorage.setItem('md_products',JSON.stringify(products));renderProducts();renderAdmin()}
+function updateStatus(id,val){let o=orders.find(x=>x.id===id);o.status=val;localStorage.setItem('md_orders',JSON.stringify(orders))}
+function deleteOrder(id){orders=orders.filter(o=>o.id!==id);localStorage.setItem('md_orders',JSON.stringify(orders));renderAdmin()}
+function showTab(tab){productsTab.style.display=tab==='productsTab'?'block':'none';ordersTab.style.display=tab==='ordersTab'?'block':'none'}
+function goToTrack(){let id=document.getElementById('trackInput').value;if(id) window.location='track.html?id='+id}
+
+renderProducts();
+</script>
+</body>
+</html>
